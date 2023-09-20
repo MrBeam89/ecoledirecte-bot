@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#TODO Réparer Vie Scolaire
+# /!\ Les devoirs et les contenus de séances sont encodés en Base64
 import requests
 
 identifiant = input("Identifiant: ")
@@ -30,10 +30,17 @@ token = login_response_json_data["token"]
 header["X-Token"] = token
 eleve_id = login_response_json_data["data"]["accounts"][0]["id"]
 
+# Timeline
+TIMELINE_URL = f'https://api.ecoledirecte.com/v3/eleves/{eleve_id}/timeline.awp?verbe=get'
+timeline_request = f'data={{"token": "{token}"}}'
+
+timeline_reponse = requests.post(url=TIMELINE_URL, data=timeline_request, headers=header)
+timeline_json_data = timeline_reponse.json()
+
 # Emploi du temps
 EMPLOI_DU_TEMPS_URL = f"https://api.ecoledirecte.com/v3/E/{eleve_id}/emploidutemps.awp?verbe=get"
 
-dateDebut = input("Date (Sous la forme AAAA-MM-JJ): ")
+dateDebut = input("Emploi du temps (AAAA-MM-JJ): ")
 dateFin = dateDebut
 avecTrous = "false"
 emploi_du_temps_request = f'data={{"dateDebut": "{dateDebut}", "dateFin": "{dateFin}", "avecTrous": {avecTrous}}}'
@@ -41,13 +48,44 @@ emploi_du_temps_request = f'data={{"dateDebut": "{dateDebut}", "dateFin": "{date
 emploi_du_temps_reponse = requests.post(url=EMPLOI_DU_TEMPS_URL, data=emploi_du_temps_request, headers=header)
 emploi_du_temps_json_data = emploi_du_temps_reponse.json()
 
+# Cahier de texte
+date_cahier_de_texte = input("Cahier de texte (AAAA-MM-JJ): ")
+CAHIER_DE_TEXTE_URL = f'https://api.ecoledirecte.com/v3/Eleves/{eleve_id}/cahierdetexte/{date_cahier_de_texte}.awp?v=3&verbe=get&'
+cahier_de_texte_request = f'data={{"token": "{token}"}}'
+
+cahier_de_texte_reponse = requests.post(url=CAHIER_DE_TEXTE_URL, data=cahier_de_texte_request, headers=header)
+cahier_de_texte_json_data = cahier_de_texte_reponse.json()
+
+# Notes
+NOTES_URL = f'https://api.ecoledirecte.com/v3/eleves/{eleve_id}/notes.awp?v=3&verbe=get&'
+notes_request = f'data={{"token": "{token}"}}'
+
+notes_reponse = requests.post(url=NOTES_URL, data=notes_request, headers=header)
+notes_json_data = notes_reponse.json()
+
 # Vie scolaire
 VIE_SCOLAIRE_URL = f'https://api.ecoledirecte.com/v3/eleves/{eleve_id}/viescolaire.awp?verbe=get'
-vie_scolaire_request = f'data={{"X-Tokens": {token}}}'
-vie_scolaire_reponse = requests.post(url=VIE_SCOLAIRE_URL, data=vie_scolaire_request, headers=header)
+vie_scolaire_request = f'data={{"token": "{token}"}}'
 
-print(login_response.text)
+vie_scolaire_reponse = requests.post(url=VIE_SCOLAIRE_URL, data=vie_scolaire_request, headers=header)
+vie_scolaire_json_data = vie_scolaire_reponse.json()
+
+# Pour tester
 print("\n")
+print("===LOGIN===")
+print(login_response_json_data)
+print("\n")
+print("===TIMELINE===")
+print(timeline_json_data)
+print("\n")
+print("===EMPLOI DU TEMPS===")
 print(emploi_du_temps_json_data)
 print("\n")
-print(vie_scolaire_reponse.text)
+print("===CAHIER DE TEXTE===")
+print(cahier_de_texte_json_data)
+print("\n")
+print("===NOTES===")
+print(notes_json_data)
+print("\n")
+print("===VIE SCOLAIRE===")
+print(vie_scolaire_json_data)
