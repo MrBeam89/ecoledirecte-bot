@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /!\ Les devoirs et les contenus de séances sont encodés en Base64
 import requests
+import json
 
 identifiant = input("Identifiant: ")
 motdepasse = input("Mot de passe: ")
@@ -73,19 +74,19 @@ vie_scolaire_json_data = vie_scolaire_reponse.json()
 # Pour tester
 print("\n")
 print("===LOGIN===")
-print(login_response_json_data)
+print(json.dumps(login_response_json_data, indent=4))
 print("\n")
 print("===TIMELINE===")
-print(timeline_json_data)
+print(json.dumps(timeline_json_data, indent=4))
 print("\n")
 print("===EMPLOI DU TEMPS===")
-print(emploi_du_temps_json_data)
+print(json.dumps(emploi_du_temps_json_data, indent=4))
 print("\n")
 print("===CAHIER DE TEXTE===")
-print(cahier_de_texte_json_data)
+print(json.dumps(cahier_de_texte_json_data, indent=4))
 print("\n")
 print("===NOTES===")
-print(notes_json_data)
+print(json.dumps(notes_json_data, indent=4))
 print("\n")
 print("===VIE SCOLAIRE===")
-print(vie_scolaire_json_data)
+print(json.dumps(vie_scolaire_json_data, indent=4))
