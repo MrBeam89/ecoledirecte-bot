@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
+#TODO Réparer Vie Scolaire
 import requests
-import json
 
 identifiant = input("Identifiant: ")
 motdepasse = input("Mot de passe: ")
@@ -31,14 +32,22 @@ eleve_id = login_response_json_data["data"]["accounts"][0]["id"]
 
 # Emploi du temps
 EMPLOI_DU_TEMPS_URL = f"https://api.ecoledirecte.com/v3/E/{eleve_id}/emploidutemps.awp?verbe=get"
-dateDebut = "2023-09-21"
-dateFin = "2023-09-21"
-avecTrous = "true"
+
+dateDebut = input("Date (Sous la forme AAAA-MM-JJ): ")
+dateFin = dateDebut
+avecTrous = "false"
 emploi_du_temps_request = f'data={{"dateDebut": "{dateDebut}", "dateFin": "{dateFin}", "avecTrous": {avecTrous}}}'
 
 emploi_du_temps_reponse = requests.post(url=EMPLOI_DU_TEMPS_URL, data=emploi_du_temps_request, headers=header)
 emploi_du_temps_json_data = emploi_du_temps_reponse.json()
 
+# Vie scolaire
+VIE_SCOLAIRE_URL = f'https://api.ecoledirecte.com/v3/eleves/{eleve_id}/viescolaire.awp?verbe=get'
+vie_scolaire_request = f'data={{"X-Tokens": {token}}}'
+vie_scolaire_reponse = requests.post(url=VIE_SCOLAIRE_URL, data=vie_scolaire_request, headers=header)
+
 print(login_response.text)
 print("\n")
-print(emploi_du_temps_json_data["data"])
+print(emploi_du_temps_json_data)
+print("\n")
+print(vie_scolaire_reponse.text)
