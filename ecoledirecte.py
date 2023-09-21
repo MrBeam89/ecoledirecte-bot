@@ -38,6 +38,7 @@ def login(identifiant, motdepasse):
     # Obtient le token et l'identifiant d'élève
     token = login_response_json_data["token"] 
     eleve_id = login_response_json_data["data"]["accounts"][0]["id"]
+    header["X-Token"] = token
 
     return [login_response_json_data, eleve_id, token]
 
