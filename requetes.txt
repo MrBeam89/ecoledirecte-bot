@@ -1,0 +1,75 @@
+/!\ EN-TÊTE NÉCESSAIRE À CHAQUE REQUETE À L'API /!\
+header = {
+            'authority': 'api.ecoledirecte.com',
+            'accept': 'application/json, text/plain, */*',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+            'content-type': 'application/x-www-form-urlencoded',
+            'sec-gpc': '1',
+            'origin': 'https://www.ecoledirecte.com',
+            'sec-fetch-site': 'same-site',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-dest': 'empty',
+            'referer': 'https://www.ecoledirecte.com/',
+            'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+            'X-token': <insérer token ici>
+        }
+
+===REQUETES===
+
+---CONNEXION---
+/!\ Pas besoin du token pour la connection, il sera obtenu avec la réponse
+URL : "https://api.ecoledirecte.com/v3/login.awp"
+Données : "data=
+          {
+            "uuid": "",
+            "identifiant": "<insérer identifiant ici>",
+            "motdepasse": "<insérer mot de passe ici>"
+          }"
+Header : <insérer header ici>
+
+---TIMELINE---
+/!\ Besoin de l'ID d'élève et du token, ils seront obtenu avec la réponse de la connexion
+URL : 'https://api.ecoledirecte.com/v3/eleves/<insérer id d'élève ici>/timeline.awp?verbe=get'
+Données : "data=
+          {
+            "token": "<insérer token ici>"
+          }"
+Header : <insérer header ici>
+
+---EMPLOI DU TEMPS---
+/!\ Besoin de l'ID d'élève et du token, ils seront obtenu avec la réponse de la connexion
+URL : "https://api.ecoledirecte.com/v3/E/<insérer id d'élève ici>/emploidutemps.awp?verbe=get"
+Données : "data=
+          {
+            "dateDebut": "2021-12-15",
+            "dateFin": "2021-12-15",
+            "avecTrous": <true ou false>
+          }"
+Header : <insérer header ici>
+
+---CAHIER DE TEXTE---
+/!\ Besoin de l'ID d'élève et du token, ils seront obtenu avec la réponse de la connexion
+URL : 'https://api.ecoledirecte.com/v3/Eleves/<insérer id d'élève ici>/cahierdetexte/<insérer date ici>.awp?v=3&verbe=get&'
+Données : "data=
+          {
+            "token": "<insérer token ici>"
+          }"
+Header : <insérer header ici>
+
+---NOTES---
+/!\ Besoin de l'ID d'élève et du token, ils seront obtenu avec la réponse de la connexion
+URL : 'https://api.ecoledirecte.com/v3/eleves/<insérer id d'élève ici>/notes.awp?v=3&verbe=get&'
+Données : "data=
+          {
+            "token": "<insérer token ici>"
+          }"
+Header : <insérer header ici>
+
+---VIE SCOLAIRE---
+/!\ Besoin de l'ID d'élève et du token, ils seront obtenu avec la réponse de la connexion
+URL : 'https://api.ecoledirecte.com/v3/eleves/<insérer id d'élève ici>/viescolaire.awp?verbe=get'
+Données : "data=
+          {
+            "token": "<insérer token ici>"
+          }"
+Header : <insérer header ici>
