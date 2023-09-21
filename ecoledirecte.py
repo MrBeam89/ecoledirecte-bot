@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-# /!\ Les devoirs et les contenus de séances sont encodés en Base64
 import requests
-import json
-
-# Pour l'emploi du temps et le cahier de texte
-date = "2023-09-22"
 
 # En-tête, nécessaire pour toutes les requêtes
 header = {
@@ -21,7 +16,6 @@ header = {
             'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7'
         }
 
-# Connexion
 def login(identifiant, motdepasse):
     '''
     login : connexion avec identifiants EcoleDirecte
@@ -43,12 +37,10 @@ def login(identifiant, motdepasse):
 
     # Obtient le token et l'identifiant d'élève
     token = login_response_json_data["token"] 
-    header["X-Token"] = token
     eleve_id = login_response_json_data["data"]["accounts"][0]["id"]
 
     return [login_response_json_data, eleve_id, token]
 
-# Timeline
 def timeline(eleve_id, token):
     '''
     timeline : Timeline
@@ -65,7 +57,6 @@ def timeline(eleve_id, token):
     timeline_json_data = timeline_reponse.json()
     return timeline_json_data
 
-# Emploi du temps
 def emploi_du_temps(eleve_id, token, date_debut, date_fin, avec_trous):
     '''
     emploi_du_temps : Emploi du temps
@@ -85,7 +76,6 @@ def emploi_du_temps(eleve_id, token, date_debut, date_fin, avec_trous):
     emploi_du_temps_json_data = emploi_du_temps_reponse.json()
     return emploi_du_temps_json_data
 
-# Cahier de texte
 def cahier_de_texte(eleve_id, token, date):
     '''
     cahier_de_texte : Cahier de texte
@@ -103,7 +93,6 @@ def cahier_de_texte(eleve_id, token, date):
     cahier_de_texte_json_data = cahier_de_texte_reponse.json()
     return cahier_de_texte_json_data
 
-# Notes
 def notes(eleve_id, token):
     '''
     notes : Notes
@@ -120,7 +109,6 @@ def notes(eleve_id, token):
     notes_json_data = notes_reponse.json()
     return notes_json_data
 
-# Vie scolaire
 def vie_scolaire(eleve_id, token):
     '''
     vie_scolaire : Vie scolaire
@@ -136,33 +124,3 @@ def vie_scolaire(eleve_id, token):
     vie_scolaire_reponse = requests.post(url=VIE_SCOLAIRE_URL, data=vie_scolaire_request, headers=header)
     vie_scolaire_json_data = vie_scolaire_reponse.json()
     return vie_scolaire_json_data
-
-# Pour tester
-print("\n")
-print("===LOGIN===")
-login_out = login("NolanCV", "AZE.rty123")
-
-eleve_id = login_out[1]
-token = login_out[2]
-
-print(json.dumps(login_out[0], indent=4))
-print("\n")
-
-print("===TIMELINE===")
-print(json.dumps(timeline(eleve_id, token), indent=4))
-print("\n")
-
-print("===EMPLOI DU TEMPS===")
-print(json.dumps(emploi_du_temps(eleve_id, token, date, date, "true"), indent=4))
-print("\n")
-
-print("===CAHIER DE TEXTE===")
-print(json.dumps(cahier_de_texte(eleve_id, token, date), indent=4))
-print("\n")
-
-print("===NOTES===")
-print(json.dumps(notes(eleve_id, token), indent=4))
-print("\n")
-
-print("===VIE SCOLAIRE===")
-print(json.dumps(vie_scolaire(eleve_id, token), indent=4))
