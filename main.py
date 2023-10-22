@@ -3,10 +3,12 @@
 import ecoledirecte
 import json
 
-date = "2023-09-22"
+username = input("Nom d'utilisateur : ")
+password = input("Mot de passe : ")
+date = input("Date (AAAA-MM-JJ) :")
 
 print("===LOGIN===")
-login_out = ecoledirecte.login("NolanCV", "AZE.rty123")
+login_out = ecoledirecte.login(username, password)
 
 eleve_id = login_out[1]
 token = login_out[2]
