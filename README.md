@@ -1,4 +1,6 @@
 # ecoledirecte-bot
+⚠️ **Non fonctionnel** ⚠️
+
 EcoleDirecte dans Discord
 
 ## Fonctionnalités à rajouter
