@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# ecoledirecte : module pour obtenir les données EcoleDirecte via l'API
 import requests
 
 # En-tête, nécessaire pour toutes les requêtes
@@ -23,16 +23,14 @@ def login(identifiant, motdepasse):
     identifiant: votre identifiant EcoleDirecte
     motdepasse: votre mot de passe EcoleDirecte
     Renvoie (si connexion réussie):
-    [login_response_json_data, eleve_id, token]
     login_response_json_data : données en JSON de votre compte EcoleDirecte
-    eleve_id : votre identifiant d'élève
-    token : votre token
     '''
 
-    LOGIN_URL = "https://api.ecoledirecte.com/v3/login.awp"
-    login_request = f'data={{"uuid": "", "identifiant": "{identifiant}", "motdepasse": "{motdepasse}"}}'
+    LOGIN_URL = "https://api.ecoledirecte.com/v3/login.awp?v=4.43.0"
+    login_request = f'data={{"uuid": "", "identifiant": "{identifiant}", "isRelogin": false, "motdepasse": "{motdepasse}"}}'
     # Tentative de connexion
     login_response = requests.post(url=LOGIN_URL, data=login_request, headers=header)
+
     login_response_json_data = login_response.json()
 
     # Obtient le token et l'identifiant d'élève
@@ -40,7 +38,7 @@ def login(identifiant, motdepasse):
     eleve_id = login_response_json_data["data"]["accounts"][0]["id"]
     header["X-Token"] = token
 
-    return [login_response_json_data, eleve_id, token]
+    return login_response_json_data
 
 def timeline(eleve_id, token):
     '''
