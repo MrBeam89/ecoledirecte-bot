@@ -4,23 +4,24 @@ EcoleDirecte dans Discord
 ## Fonctionnalités à rajouter
 
 **Priorité : Importante**
-- [ ] Connexion
-- [ ] Cahier de texte
-- [ ] Emploi du temps
-- [ ] Notes
-- [ ] Vie scolaire
+- [X] Connexion
+- [X] Cahier de texte
+- [X] Emploi du temps
+- [X] Notes
+- [X] Vie scolaire
 
 **Priorité : Normale**
+- [X] Timeline commune
+- [X] Timeline
+- [X] Carnet de correspondance
+- [X] Documents administratifs
 - [ ] Leaderboard des notes
-- [ ] Timeline commune
-- [ ] Timeline
-- [ ] Carnet de correspondance
-- [ ] Documents administratifs
 
 **Priorité : Basse**
-- [ ] QCMs
+- [X] QCMs
+- [X] Manuels numériques
+- [X] Vie de la classe
 - [ ] Espaces de travail
 - [ ] Cloud
 - [ ] Commandes
 - [ ] Téléchargement
-- [ ] Manuels numériques
