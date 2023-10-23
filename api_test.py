@@ -64,5 +64,3 @@ print("\n")
 print("===VIE DE CLASSE===")
 print(json.dumps(ecoledirecte.vie_de_classe(token, classe_id), indent=4))
 print("\n")
-
-print(dir(ecoledirecte))
