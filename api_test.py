@@ -7,6 +7,7 @@ password = input("Mot de passe : ")
 date = input("Date (AAAA-MM-JJ) : ")
 archive = input("Années (AAAA-AAAA) : ")
 
+print("\n")
 print("===LOGIN===")
 login_out = ecoledirecte.login(username, password)
 
