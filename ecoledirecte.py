@@ -4,17 +4,17 @@ import requests
 # URLs pour les requêtes
 urls = {
             "LOGIN_URL": "https://api.ecoledirecte.com/v3/login.awp?v=4.44.0",
-            "TIMELINE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/timeline.awp?verbe=get&v=4.44.0",
-            "EMPLOI_DU_TEMPS_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/emploidutemps.awp?verbe=get&v=4.44.0",
-            "CAHIER_DE_TEXTE_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/cahierdetexte/{{date}}.awp?verbe=get&v=4.44.0",
-            "NOTES_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/notes.awp?verbe=get&v=4.44.0",
-            "VIE_SCOLAIRE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/viescolaire.awp?verbe=get&v=4.44.0",
-            "TIMELINE_COMMUNE_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/timelineAccueilCommun.awp?verbe=get&v=4.44.0",
-            "CARNET_DE_CORRESPONDANCE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/eleveCarnetCorrespondance.awp?verbe=get&v=4.44.0",
-            "DOCUMENTS_ADMINISTRATIFS_URL": f"https://api.ecoledirecte.com/v3/elevesDocuments.awp?verbe=get&v=4.44.0?archive={{archive}}",
-            "QCMS_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/qcms/0/associations.awp?verbe=get&v=4.44.0",
-            "MANUELS NUMERIQUES_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/manuelsNumeriques.awp?verbe=get&v=4.44.0",
-            "VIE_DE_CLASSE_URL": f"https://api.ecoledirecte.com/v3/Classes/{{classe_id}}/viedelaclasse.awp?verbe=get&v=4.44.0",
+            "TIMELINE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/timeline.awp?verbe=get&v=4.44.1",
+            "EMPLOI_DU_TEMPS_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/emploidutemps.awp?verbe=get&v=4.44.1",
+            "CAHIER_DE_TEXTE_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/cahierdetexte/{{date}}.awp?verbe=get&v=4.44.1",
+            "NOTES_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/notes.awp?verbe=get&v=4.44.1",
+            "VIE_SCOLAIRE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/viescolaire.awp?verbe=get&v=4.44.1",
+            "TIMELINE_COMMUNE_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/timelineAccueilCommun.awp?verbe=get&v=4.44.1",
+            "CARNET_DE_CORRESPONDANCE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/eleveCarnetCorrespondance.awp?verbe=get&v=4.44.1",
+            "DOCUMENTS_ADMINISTRATIFS_URL": f"https://api.ecoledirecte.com/v3/elevesDocuments.awp?verbe=get&v=4.44.1?archive={{archive}}",
+            "QCMS_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/qcms/0/associations.awp?verbe=get&v=4.44.1",
+            "MANUELS NUMERIQUES_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/manuelsNumeriques.awp?verbe=get&v=4.44.1",
+            "VIE_DE_CLASSE_URL": f"https://api.ecoledirecte.com/v3/Classes/{{classe_id}}/viedelaclasse.awp?verbe=get&v=4.44.1",
     }
 
 # En-tête, nécessaire pour toutes les requêtes
@@ -39,15 +39,14 @@ def login(identifiant, motdepasse):
     identifiant: votre identifiant EcoleDirecte
     motdepasse: votre mot de passe EcoleDirecte
     Renvoie (si connexion réussie):
-    login_response_json_data : données en JSON de votre compte EcoleDirecte
+    login_reponse : réponse d'EcoleDirecte pour la connexion
     '''
 
-    LOGIN_URL = urls["LOGIN_URL"]
+    url = urls["LOGIN_URL"]
     login_request = f'data={{"uuid": "", "identifiant": "{identifiant}", "isRelogin": false, "motdepasse": "{motdepasse}"}}'
-    login_response = requests.post(url=LOGIN_URL, data=login_request, headers=header)
-    login_response_json_data = login_response.json()
+    login_response = requests.post(url=url, data=login_request, headers=header)
     
-    return login_response_json_data
+    return login_response
 
 def timeline(eleve_id, token):
     '''
@@ -56,16 +55,15 @@ def timeline(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    timeline_json_data : données en JSON de votre timeline
+    timeline_reponse : réponse d'EcoleDirecte pour la timeline
     '''
     header["X-Token"] = token
 
-    TIMELINE_URL = urls["TIMELINE_URL"].format(eleve_id=eleve_id)
+    url = urls["TIMELINE_URL"].format(eleve_id=eleve_id)
     timeline_request = f'data={{"token": "{token}"}}'
-    timeline_reponse = requests.post(url=TIMELINE_URL, data=timeline_request, headers=header)
-    timeline_json_data = timeline_reponse.json()
+    timeline_reponse = requests.post(url=url, data=timeline_request, headers=header)
     
-    return timeline_json_data
+    return timeline_reponse
 
 def emploi_du_temps(eleve_id, token, date_debut, date_fin, avec_trous):
     '''
@@ -77,16 +75,15 @@ def emploi_du_temps(eleve_id, token, date_debut, date_fin, avec_trous):
     avec_trous : affiche ou pas les trous
     /!\ avec_trous doit être soit "true" ou "false" (pas en booléen)
     Renvoie (si réussi) :
-    emploi_du_temps_json_data : données en JSON de votre emploi du temps 
+    emploi_du_temps_reponse : réponse d'EcoleDirecte pour l'emploi du temps à la date choisie/l'intervalle choisi
     '''
     header["X-Token"] = token
     
-    EMPLOI_DU_TEMPS_URL = urls["EMPLOI_DU_TEMPS_URL"].format(eleve_id=eleve_id)
+    url = urls["EMPLOI_DU_TEMPS_URL"].format(eleve_id=eleve_id)
     emploi_du_temps_request = f'data={{"dateDebut": "{date_debut}", "dateFin": "{date_fin}", "avecTrous": {avec_trous}}}'
-    emploi_du_temps_reponse = requests.post(url=EMPLOI_DU_TEMPS_URL, data=emploi_du_temps_request, headers=header)
-    emploi_du_temps_json_data = emploi_du_temps_reponse.json()
-    
-    return emploi_du_temps_json_data
+    emploi_du_temps_reponse = requests.post(url=url, data=emploi_du_temps_request, headers=header)
+
+    return emploi_du_temps_reponse
 
 def cahier_de_texte(eleve_id, token, date):
     '''
@@ -96,16 +93,15 @@ def cahier_de_texte(eleve_id, token, date):
     token : votre token
     date : jour de votre cahier de texte
     Renvoie (si réussi) :
-    cahier_de_texte_json_data : données en JSON de votre cahier de texte
+    cahier_de_texte_reponse : réponse d'EcoleDirecte pour le cahier de texte à la date choisie
     '''
     header["X-Token"] = token
 
-    CAHIER_DE_TEXTE_URL = urls["CAHIER_DE_TEXTE_URL"].format(eleve_id=eleve_id, date=date)
+    url = urls["CAHIER_DE_TEXTE_URL"].format(eleve_id=eleve_id, date=date)
     cahier_de_texte_request = f'data={{"token": "{token}"}}'
-    cahier_de_texte_reponse = requests.post(url=CAHIER_DE_TEXTE_URL, data=cahier_de_texte_request, headers=header)
-    cahier_de_texte_json_data = cahier_de_texte_reponse.json()
+    cahier_de_texte_reponse = requests.post(url=url, data=cahier_de_texte_request, headers=header)
     
-    return cahier_de_texte_json_data
+    return cahier_de_texte_reponse
 
 def notes(eleve_id, token):
     '''
@@ -114,16 +110,15 @@ def notes(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    notes_json_data : données en JSON de vos notes
+    notes_reponse : réponse d'EcoleDirecte pour les notes
     '''
     header["X-Token"] = token
 
-    NOTES_URL = urls["NOTES_URL"].format(eleve_id=eleve_id)
+    url = urls["NOTES_URL"].format(eleve_id=eleve_id)
     notes_request = f'data={{"token": "{token}"}}'
-    notes_reponse = requests.post(url=NOTES_URL, data=notes_request, headers=header)
-    notes_json_data = notes_reponse.json()
+    notes_reponse = requests.post(url=url, data=notes_request, headers=header)
 
-    return notes_json_data
+    return notes_reponse
 
 def vie_scolaire(eleve_id, token):
     '''
@@ -132,16 +127,15 @@ def vie_scolaire(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    vie_scolaire_json_data : données en JSON de votre vie scolaire
+    vie_scolaire_reponse : réponse d'EcoleDirecte pour la vie scolaire
     '''
     header["X-Token"] = token
 
-    VIE_SCOLAIRE_URL = urls["VIE_SCOLAIRE_URL"].format(eleve_id=eleve_id)
+    url = urls["VIE_SCOLAIRE_URL"].format(eleve_id=eleve_id)
     vie_scolaire_request = f'data={{"token": "{token}"}}'
-    vie_scolaire_reponse = requests.post(url=VIE_SCOLAIRE_URL, data=vie_scolaire_request, headers=header)
-    vie_scolaire_json_data = vie_scolaire_reponse.json()
+    vie_scolaire_reponse = requests.post(url=url, data=vie_scolaire_request, headers=header)
 
-    return vie_scolaire_json_data
+    return vie_scolaire_reponse
 
 def timeline_commune(eleve_id, token):
     '''
@@ -150,16 +144,15 @@ def timeline_commune(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    timeline_commune_json_data : données en JSON de votre timeline commune
+    timeline_commune_reponse : réponse d'EcoleDirecte pour la timeline commune
     '''
     header["X-Token"] = token
 
-    TIMELINE_COMMUNE_URL = urls["TIMELINE_COMMUNE_URL"].format(eleve_id=eleve_id)
+    url = urls["TIMELINE_COMMUNE_URL"].format(eleve_id=eleve_id)
     timeline_commune_request = f'data={{"token": "{token}"}}'
-    timeline_commune_reponse = requests.post(url=TIMELINE_COMMUNE_URL, data=timeline_commune_request, headers=header)
-    timeline_commune_json_data = timeline_commune_reponse.json()
+    timeline_commune_reponse = requests.post(url=url, data=timeline_commune_request, headers=header)
 
-    return timeline_commune_json_data
+    return timeline_commune_reponse
 
 def carnet_de_correspondance(eleve_id, token):
     '''
@@ -168,16 +161,15 @@ def carnet_de_correspondance(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    carnet_de_correspondance_json_data : données en JSON de votre carnet de correspondance
+    carnet_de_correspondance_reponse : réponse d'EcoleDirecte pour le carnet de correspondance
     '''
     header["X-Token"] = token
     
-    CARNET_DE_CORRESPONDANCE_URL = urls["CARNET_DE_CORRESPONDANCE_URL"].format(eleve_id=eleve_id)
+    url = urls["CARNET_DE_CORRESPONDANCE_URL"].format(eleve_id=eleve_id)
     carnet_de_correspondance_request = f'data={{"token": "{token}"}}'
-    carnet_de_correspondance_reponse = requests.post(url=CARNET_DE_CORRESPONDANCE_URL, data=carnet_de_correspondance_request, headers=header)
-    carnet_de_correspondance_json_data = carnet_de_correspondance_reponse.json()
+    carnet_de_correspondance_reponse = requests.post(url=url, data=carnet_de_correspondance_request, headers=header)
 
-    return carnet_de_correspondance_json_data
+    return carnet_de_correspondance_reponse
 
 def documents_administratifs(token, archive):
     '''
@@ -186,16 +178,15 @@ def documents_administratifs(token, archive):
     token : votre token
     archive : année associée aux documents sous la forme (AAAA-AAAA), laisser vide pour l'année actuelle
     Renvoie (si réussi) :
-    documents_administratifs_json_data : données en JSON de vos documents administratifs
+    documents_administratifs_reponse : réponse d'EcoleDirecte pour les documents administratifs de l'année choisie
     '''
     header["X-Token"] = token
 
-    DOCUMENTS_ADMINISTRATIFS_URL = urls["DOCUMENTS_ADMINISTRATIFS_URL"].format(archive=archive)
+    url = urls["DOCUMENTS_ADMINISTRATIFS_URL"].format(archive=archive)
     documents_administratifs_request = f'data={{"token": "{token}"}}'
-    documents_administratifs_reponse = requests.post(url=DOCUMENTS_ADMINISTRATIFS_URL, data=documents_administratifs_request, headers=header)
-    documents_administratifs_json_data = documents_administratifs_reponse.json()
+    documents_administratifs_reponse = requests.post(url=url, data=documents_administratifs_request, headers=header)
     
-    return documents_administratifs_json_data
+    return documents_administratifs_reponse
 
 def qcms(eleve_id, token):
     '''
@@ -204,16 +195,15 @@ def qcms(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    qcms_json_data : données en JSON de vos QCMs
+    qcms_reponse : réponse d'EcoleDirecte pour les QCMs
     '''
     header["X-Token"] = token
     
-    QCMS_URL = urls["QCMS_URL"].format(eleve_id=eleve_id)
+    url = urls["QCMS_URL"].format(eleve_id=eleve_id)
     qcms_request = f'data={{"token": "{token}"}}'
-    qcms_reponse = requests.post(url=QCMS_URL, data=qcms_request, headers=header)
-    qcms_json_data = qcms_reponse.json()
+    qcms_reponse = requests.post(url=url, data=qcms_request, headers=header)
     
-    return qcms_json_data
+    return qcms_reponse
 
 def manuels_numeriques(eleve_id, token):
     '''
@@ -222,16 +212,15 @@ def manuels_numeriques(eleve_id, token):
     eleve_id : votre identifiant élève
     token : votre token
     Renvoie (si réussi) :
-    manuels_numeriques_json_data : données en JSON de vos manuels numériques
+    manuels_numeriques_reponse : réponse d'EcoleDirecte pour les manuels numériques
     '''
     header["X-Token"] = token
 
-    MANUELS_NUMERIQUES_URL = urls["MANUELS NUMERIQUES_URL"].format(eleve_id=eleve_id)
+    url = urls["MANUELS NUMERIQUES_URL"].format(eleve_id=eleve_id)
     manuels_numeriques_request = f'data={{"token": "{token}"}}'
-    manuels_numeriques_reponse = requests.post(url=MANUELS_NUMERIQUES_URL, data=manuels_numeriques_request, headers=header)
-    manuels_numeriques_json_data = manuels_numeriques_reponse.json()
+    manuels_numeriques_reponse = requests.post(url=url, data=manuels_numeriques_request, headers=header)
     
-    return manuels_numeriques_json_data
+    return manuels_numeriques_reponse
 
 def vie_de_classe(token, classe_id):
     '''
@@ -240,13 +229,12 @@ def vie_de_classe(token, classe_id):
     token : votre token
     classe_id : votre identifiant de classe
     Renvoie (si réussi) :
-    vie_de_classe_json_data : données en JSON de votre vie de classe
+    vie_de_classe_reponse : réponse d'EcoleDirecte pour la vie de classe
     '''
     header["X-Token"] = token
 
-    VIE_DE_CLASSE_URL = urls["VIE_DE_CLASSE_URL"].format(classe_id=classe_id)
+    url = urls["VIE_DE_CLASSE_URL"].format(classe_id=classe_id)
     vie_de_classe_request = f'data={{"token": "{token}"}}'
-    vie_de_classe_reponse = requests.post(url=VIE_DE_CLASSE_URL, data=vie_de_classe_request, headers=header)
-    vie_de_classe_json_data = vie_de_classe_reponse.json()
+    vie_de_classe_reponse = requests.post(url=url, data=vie_de_classe_request, headers=header)
 
-    return vie_de_classe_json_data
+    return vie_de_classe_reponse
