@@ -5,7 +5,7 @@ EcoleDirecte dans Discord
 
 **Priorité : Importante**
 - [X] Connexion
-- [ ] Cahier de texte
+- [X] Cahier de texte
 - [ ] Emploi du temps
 - [ ] Notes
 - [ ] Vie scolaire
