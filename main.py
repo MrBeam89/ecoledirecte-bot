@@ -1,5 +1,18 @@
-# Bot EcoleDirecte pour Discord
-# Par MrBeam89_
+#    EcoleDirecte Bot (main.py)
+#    Copyright (C) 2023 MrBeam89_
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
 from discord.ext import commands
@@ -46,12 +59,13 @@ async def aide(contexte):
     aide_msg = '''**EcoleDirecte Bot** par Raticlette (@mrbeam89_)
 EcoleDirecte dans Discord!
 Commandes disponibles :
-**!aide** : Ce message
-**!remerciements** : Merci à eux!
 **!login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
 Envoyez-moi un MP en cas de souci!
 **!logout** : Se déconnecter
-**!cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)'''
+**!cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
+**!aide** : Ce message
+**!remerciements** : Merci à eux!
+**!license** : Informations de license'''
     await contexte.send(aide_msg)
 
 
@@ -95,6 +109,14 @@ async def login(contexte, username, password):
             await contexte.send("Identifiant et/ou mot de passe invalide!")
 
 
+# Erreurs de !login
+@login.error
+async def login_error(contexte, error):
+    if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+        logging.info(f"Syntaxe de !login invalide par l'utilisateur {contexte.author.name}")
+        await contexte.send("Syntaxe invalide! : Utilisez !login <identifiant> <motdepasse>")
+
+
 # Déconnexion
 @bot.command()
 async def logout(contexte):
@@ -104,25 +126,6 @@ async def logout(contexte):
     else:
         await contexte.send("Vous n'êtes pas connecté!")
         logging.info(f"Tentative de deconnexion ratee de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-
-
-# Erreurs de !login
-@login.error
-async def login_error(contexte, error):
-    if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-        logging.info(f"Syntaxe de !login invalide par l'utilisateur {contexte.author.name}")
-        await contexte.send("Syntaxe invalide! : Utilisez !login <identifiant> <motdepasse>")
-
-
-# DEBUG Obtenir token
-@bot.command()
-async def token_get(contexte):
-    encrypted_token = db_handler.fetch_user_info(contexte.author.id)
-    if encrypted_token:
-        token = aes.decrypt_aes(encrypted_token, keygen.getkey())
-        await contexte.send(token)
-    else:
-        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
 
 
 # Emploi du temps
@@ -149,15 +152,30 @@ async def cdt(contexte, date):
             except Exception:
                 pass
         await contexte.send(message)
+        logging.info(f"Utilisateur {contexte.author.name} a utilisé !cdt")
 
     else:
         await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de !cdt sans être connecte")
 
 # Remerciements
 @bot.command()
 async def remerciements(contexte):
     message = "Merci à...\n"
     message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
+    await contexte.send(message)
+
+# License
+@bot.command()
+async def license(contexte):
+    message = '''🤖 **Informations de Licence du Bot**
+
+Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+
+📜 **Texte Complet de la Licence :**
+[GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+
+Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, n'hésitez pas à contacter le développeur du bot.'''
     await contexte.send(message)
 
 # Démarrer le bot
