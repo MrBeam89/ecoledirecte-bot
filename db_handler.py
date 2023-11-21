@@ -19,6 +19,21 @@ from ecoledirecte import login
 from aes import *
 from keygen import *
 
+# Créer la base de données et ajouter la table si elle n'existe pas
+connection = sqlite3.connect('db.sqlite3')
+cursor = connection.cursor()
+create_table_sql = '''
+CREATE TABLE IF NOT EXISTS users (
+    db_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    identifiant BLOB,
+    motdepasse BLOB
+);
+'''
+cursor.execute(create_table_sql)
+connection.commit()
+connection.close()
+
 # Ajouter les informations d'un nouvel utilisateur
 def add_user_info(user_id:int, identifiant:str, motdepasse:str)->bool:
     connection = sqlite3.connect("db.sqlite3")
