@@ -24,6 +24,8 @@ import db_handler
 import b64
 import str_clean
 
+COOLDOWN = 5 # En secondes
+
 # Configuration du journal
 logging.basicConfig(level=logging.DEBUG, filename="log.log", filemode="a",
                     format="%(asctime)s [%(levelname)s] %(message)s")
@@ -38,7 +40,6 @@ try:
 except FileNotFoundError:
     logging.error("Fichier introuvable! Placer token dans un fichier token.txt")
 
-
 # Au démarrage du bot
 @bot.event
 async def on_ready():
@@ -47,6 +48,7 @@ async def on_ready():
 
 # Erreures générales
 @bot.event
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def on_command_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await contexte.send("Commande invalide! Utilisez **!aide** pour afficher la liste des commandes disponibles")
@@ -55,6 +57,7 @@ async def on_command_error(contexte, error):
 
 # Aide
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def aide(contexte):
     aide_msg = '''**EcoleDirecte Bot** par Raticlette (@mrbeam89_)
 EcoleDirecte dans Discord!
@@ -71,6 +74,7 @@ Envoyez-moi un MP en cas de souci!
 
 # Remerciements
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def remerciements(contexte):
     message = "Merci à...\n"
     message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
@@ -78,6 +82,7 @@ async def remerciements(contexte):
 
 # License
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def license(contexte):
     message = '''🤖 **Informations de Licence du Bot**
 
@@ -91,6 +96,7 @@ Pour plus de détails, veuillez consulter la licence. Si vous avez des questions
 
 # Connexion
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def login(contexte, username, password):
     # Si l'utilisateur est déjà connecté
     if db_handler.fetch_user_info(contexte.author.id):
@@ -139,6 +145,7 @@ async def login_error(contexte, error):
 
 # Déconnexion
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def logout(contexte):
     if db_handler.delete_user(contexte.author.id):
         await contexte.send("Vous êtes maintenant déconnecté!")
@@ -150,6 +157,7 @@ async def logout(contexte):
 
 # Emploi du temps
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def cdt(contexte, date):
     await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
@@ -180,6 +188,7 @@ async def cdt(contexte, date):
 
 # Vie scolaire
 @bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def vie_scolaire(contexte):
     await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
