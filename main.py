@@ -63,11 +63,31 @@ Commandes disponibles :
 Envoyez-moi un MP en cas de souci!
 **!logout** : Se déconnecter
 **!cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
+**!vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
 **!aide** : Ce message
 **!remerciements** : Merci à eux!
 **!license** : Informations de license'''
     await contexte.send(aide_msg)
 
+# Remerciements
+@bot.command()
+async def remerciements(contexte):
+    message = "Merci à...\n"
+    message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
+    await contexte.send(message)
+
+# License
+@bot.command()
+async def license(contexte):
+    message = '''🤖 **Informations de Licence du Bot**
+
+Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+
+📜 **Texte Complet de la Licence :**
+[GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+
+Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, n'hésitez pas à contacter le développeur du bot.'''
+    await contexte.send(message)
 
 # Connexion
 @bot.command()
@@ -79,7 +99,7 @@ async def login(contexte, username, password):
 
     # Si l'utilisateur n'est pas encore connecté
     else:
-        await contexte.send("Veuillez patienter...")
+        await contexte.send(":hourglass: Veuillez patienter...")
         logging.info(f"Tentative d'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         reponse = ecoledirecte.login(username, password)
         reponse_json = reponse.json()
@@ -131,7 +151,7 @@ async def logout(contexte):
 # Emploi du temps
 @bot.command()
 async def cdt(contexte, date):
-    await contexte.send("Veuillez patienter...")
+    await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
     if user_info:
         username = aes.decrypt_aes(user_info[2], keygen.getkey())
@@ -143,12 +163,12 @@ async def cdt(contexte, date):
         message = ""
         cdt_data = ecoledirecte.cahier_de_texte(eleve_id, token, date).json()["data"]
 
-        message += f"Devoirs à faire pour le {date}\n"
+        message += f":pencil: **Devoirs à faire pour le {date}**\n\n"
         for index in range(len(cdt_data["matieres"])):
             try:
                 matiere = cdt_data["matieres"][index]["matiere"]
                 texte = str_clean.clean(b64.decode_base64(cdt_data["matieres"][index]["aFaire"]["contenu"]))
-                message += f"**{matiere}** : {texte}\n"
+                message += f"**{matiere}** : {texte}\n\n"
             except Exception:
                 pass
         await contexte.send(message)
@@ -158,31 +178,95 @@ async def cdt(contexte, date):
         await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
         logging.info(f"Utilisateur {contexte.author.name} a essaye de !cdt sans être connecte")
 
-# Remerciements
+# Vie scolaire
 @bot.command()
-async def remerciements(contexte):
-    message = "Merci à...\n"
-    message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
-    await contexte.send(message)
+async def vie_scolaire(contexte):
+    await contexte.send(":hourglass: Veuillez patienter...")
+    user_info = db_handler.fetch_user_info(contexte.author.id)
+    if user_info:
+        username = aes.decrypt_aes(user_info[2], keygen.getkey())
+        password = aes.decrypt_aes(user_info[3], keygen.getkey())
+        login_data = ecoledirecte.login(username, password).json()
+        token = login_data["token"]
+        eleve_id = login_data["data"]["accounts"][0]["id"]
 
-# License
-@bot.command()
-async def license(contexte):
-    message = '''🤖 **Informations de Licence du Bot**
+        message = ""
+        vie_scolaire_data = ecoledirecte.vie_scolaire(eleve_id, token).json()["data"]
 
-Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+        message += ":school: **Vie scolaire**\n\n"
 
-📜 **Texte Complet de la Licence :**
-[GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+        # Absences et retards
+        absences = []
+        retards = []
+        
+        # Tri absence/retard
+        for element in vie_scolaire_data["absencesRetards"]:
+            if element["typeElement"] == "Absence":
+                absences.append(element)
+            if element["typeElement"] == "Retard":
+                retards.append(element)
 
-Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, n'hésitez pas à contacter le développeur du bot.'''
-    await contexte.send(message)
+        # Message des absences
+        message +=  ":ghost: **Absences**\n"
+        message += f"{len(absences)} absence(s)\n"
+        for absence in absences:
+            date = absence["displayDate"]
+            if absence["justifie"] == True:
+                justifiee = "Oui"
+            else:
+                justifiee = "Non"
+            message += f"- {date}. Justifiée ? **{justifiee}**\n"
+
+        message += "\n"
+        
+        # Message des retards
+        message += ":hourglass: **Retards**\n"
+        message += f"{len(retards)} retard(s)\n"
+        for retard in retards:
+            date = retard["displayDate"]
+            duree = retard["libelle"]
+            if retard["justifiee"]:
+                justifiee = "Oui"
+            else:
+                justifiee = "Non"
+            message += f"- {date} de {duree}. Justifiée ? **{justifiee}**\n"
+        
+        message += "\n"
+
+        # Encouragements/punitions
+        encouragements = []
+        punitions = []
+
+        for element in vie_scolaire_data["sanctionsEncouragements"]:
+            if element["typeElement"] == "Punition":
+                punitions.append(element)
+            else:
+                encouragements.append(element)
+
+        # Encouragements
+        message += ":thumbsup: **Encouragements**\n"
+        message += f"{len(encouragements)} encouragement(s)\n"
+        for encouragement in encouragements:
+            date = encouragement["date"]
+            motif = encouragement["motif"]
+            message += f"- Le {date} pour {motif}"
+
+        message += "\n"
+
+        # Punitions
+        message += ":boom: **Punitions**\n"
+        message += f"{len(punitions)} punition(s)"
+        for punition in punitions:
+            date = punition["date"]
+            libelle = punition["libelle"]
+            motif = punition["motif"]
+            duree = punition["aFaire"]
+            message += f"- {libelle} le {date} pendant {duree} pour {motif}\n"
+
+        await contexte.send(message)
 
 # Démarrer le bot
 try:
     bot.run(token)
 except discord.errors.LoginFailure:
     logging.error("Token invalide")
-
-
-# classe_id = login_data["data"]["accounts"][0]["profile"]["classe"]["id"]
