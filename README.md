@@ -9,7 +9,7 @@ EcoleDirecte dans Discord
 - [X] Cahier de texte
 - [ ] Emploi du temps
 - [ ] Notes
-- [ ] Vie scolaire
+- [X] Vie scolaire
 
 **Priorité : Normale**
 - [ ] Timeline commune
