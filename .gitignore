@@ -1,0 +1,8 @@
+# Bytecode files
+__pycache__/
+
+# Sensitive files
+db.sqlite3
+keyfile.bin
+*.log
+token.txt
