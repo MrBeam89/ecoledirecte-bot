@@ -27,7 +27,7 @@ import str_clean
 COOLDOWN = 5 # En secondes
 
 # Configuration du journal
-logging.basicConfig(level=logging.DEBUG, filename="log.log", filemode="a",
+logging.basicConfig(level=logging.INFO, filename="log.log", filemode="a",
                     format="%(asctime)s [%(levelname)s] %(message)s")
 
 # Paramètres du bot
@@ -39,6 +39,7 @@ try:
     token = token_file.read()
 except FileNotFoundError:
     logging.error("Fichier introuvable! Placer token dans un fichier token.txt")
+    exit()
 
 # Au démarrage du bot
 @bot.event
