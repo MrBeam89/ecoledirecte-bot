@@ -18,9 +18,9 @@ import re
 import html
 
 def clean(input_string):
-    # Convert HTML entities to corresponding characters
+    # Convertir les entités HTML en caractères correspondants
     input_string = html.unescape(input_string)
     
-    # Remove HTML tags
+    # Enlève les élements HTML
     clean = re.compile('<.*?>')
     return re.sub(clean, '', input_string).rstrip('\n')
