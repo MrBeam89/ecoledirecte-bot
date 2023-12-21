@@ -6,3 +6,5 @@ db.sqlite3
 keyfile.bin
 *.log
 token.txt
+
+TODO.md

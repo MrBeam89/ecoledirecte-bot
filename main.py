@@ -78,6 +78,7 @@ Envoyez-moi un MP en cas de souci!
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def remerciements(contexte):
     message = "Merci à...\n"
+    message += "**Aleocraft (@aleocraft)** : Premier Bêta-testeur !\n"
     message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
     await contexte.send(message)
 
