@@ -318,12 +318,9 @@ async def vie_scolaire(contexte):
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def edt(contexte, date):
     # Vérifie si la date est valide
-    try:
-        if not date_valide(date):
-            await contexte.send("Date invalide!")
-            return None
-    except Exception as e:
-        print(e)
+    if not date_valide(date):
+        await contexte.send("Date invalide!")
+        return None
 
     await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
