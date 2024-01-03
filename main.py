@@ -1,5 +1,5 @@
 #    EcoleDirecte Bot (main.py)
-#    Copyright (C) 2023 MrBeam89_
+#    Copyright (C) 2023-2024 MrBeam89_
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 import discord
 from discord.ext import commands
 import logging
+import re
 import ecoledirecte
 import aes
 import keygen
@@ -46,6 +47,16 @@ except FileNotFoundError:
 async def on_ready():
     logging.info("Bot pret!")
 
+# Vérifie si la date est valide
+def date_valide(input_string):
+    # Vérifie si le format est correct
+    pattern = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+    if pattern.match(input_string):
+        # Vérifie si le mois et les jours sont valides
+        annee, mois, jour = map(int, input_string.split('-'))
+        if 1 <= mois <= 12 and 1 <= jour <= 31:
+            return True
+    return False
 
 # Erreures générales
 @bot.event
@@ -67,6 +78,7 @@ Commandes disponibles :
 Envoyez-moi un MP en cas de souci!
 **!logout** : Se déconnecter
 **!cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
+**!edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
 **!vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
 **!aide** : Ce message
 **!remerciements** : Merci à eux!
@@ -161,6 +173,11 @@ async def logout(contexte):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def cdt(contexte, date):
+    # Vérifie si la date est valide
+    if not date_valide(date):
+        await contexte.send("Date invalide!")
+        return None
+
     await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
     if user_info:
@@ -294,6 +311,57 @@ async def vie_scolaire(contexte):
         # Si identifiants changés
         if login_data["code"] == 505:
             logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+            await contexte.send("Identifiant et/ou mot de passe invalide!")
+
+# Emploi du temps
+@bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
+async def edt(contexte, date):
+    # Vérifie si la date est valide
+    try:
+        if not date_valide(date):
+            await contexte.send("Date invalide!")
+            return None
+    except Exception as e:
+        print(e)
+
+    await contexte.send(":hourglass: Veuillez patienter...")
+    user_info = db_handler.fetch_user_info(contexte.author.id)
+    if user_info:
+        # Récuperer identifiants et données
+        username = aes.decrypt_aes(user_info[2], keygen.getkey())
+        password = aes.decrypt_aes(user_info[3], keygen.getkey())
+        login_data = ecoledirecte.login(username, password).json()
+
+        # Si identifiants corrects
+        if login_data["code"] == 200:
+            token = login_data["token"]
+            eleve_id = login_data["data"]["accounts"][0]["id"]
+            edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
+            
+            edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
+            message = f":calendar_spiral: **Emploi du temps du {date}**\n"
+            nb_de_cours = 0
+            for cours in edt_data:
+                if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
+                    heure_debut = cours["start_date"][-5:]
+                    heure_fin = cours["end_date"][-5:]
+                    salle = cours["salle"]
+                    nom = cours["text"]
+                    est_annule = cours["isAnnule"]
+                    if est_annule == True: # Si le cours est annulé
+                        message += f"~~**{heure_debut}-{heure_fin}** : {nom} en {salle}~~\n"
+                    else:
+                        message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
+                        nb_de_cours += 1
+            
+            if nb_de_cours > 0:
+                await contexte.send(message)
+            else:
+                await contexte.send("**:tada: Pas de cours ce jour-là !**")
+                
+        # Si identifiants changés
+        if login_data["code"] == 505:
             await contexte.send("Identifiant et/ou mot de passe invalide!")
 
 # Démarrer le bot

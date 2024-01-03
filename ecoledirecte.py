@@ -1,5 +1,5 @@
 #    EcoleDirecte Bot (ecoledirecte.py)
-#    Copyright (C) 2023 MrBeam89_
+#    Copyright (C) 2023-2024 MrBeam89_
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import requests
 urls = {
             "LOGIN_URL": "https://api.ecoledirecte.com/v3/login.awp?v=4.44.0",
             "TIMELINE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/timeline.awp?verbe=get&v=4.44.1",
-            "EMPLOI_DU_TEMPS_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/emploidutemps.awp?verbe=get&v=4.44.1",
+            "EMPLOI_DU_TEMPS_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/emploidutemps.awp?v=4.46.3&verbe=get",
             "CAHIER_DE_TEXTE_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/cahierdetexte/{{date}}.awp?verbe=get&v=4.44.1",
             "NOTES_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/notes.awp?verbe=get&v=4.44.1",
             "VIE_SCOLAIRE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/viescolaire.awp?verbe=get&v=4.44.1",

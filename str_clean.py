@@ -1,5 +1,5 @@
 #    EcoleDirecte Bot (str_clean.py)
-#    Copyright (C) 2023 MrBeam89_
+#    Copyright (C) 2023-2024 MrBeam89_
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
