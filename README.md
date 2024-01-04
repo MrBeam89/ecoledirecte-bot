@@ -1,9 +1,7 @@
 <p align="center">
     <img src="docs/bot_icon.png" alt="Logo d'EcoleDirecte Bot" width=200 height=200/>
 </p>
-<div style="text-align:center;">
-  <h1>EcoleDirecte Bot</h1>
-</div>
+<h1 align="center">EcoleDirecte Bot</h1>
 
 <p align="center">
     <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/MrBeam89/ecoledirecte-bot?style=for-the-badge&logo=python">
@@ -21,6 +19,10 @@
     <a href="#guide_demarrage">Guide de démarrage</a>
     ·
     <a href="#contribuer">Contribuer</a>
+    ·
+    <a href="#remerciements">Remerciements</a>
+    ·
+    <a href="#license">License</a>
 </p>
 <h2 id="presentation">Présentation</h2>
 
@@ -61,8 +63,8 @@ Vous aurez besoin des outils suivants :
 
 ### Démarrage
 
-- Sur Windows : Double-cliquez le fichier `main.py`
-- Sur Linux : Démarrez le terminal, accédez au répertoire du dépôt et tapez `python3 main.py`
+- Sur **Windows** : Double-cliquez le fichier `main.py`
+- Sur **Linux/Mac** : Démarrez le terminal, accédez au répertoire du dépôt et tapez `python3 main.py`
 
 Sur Discord, tapez la commande `!aide`, si tout est bien configuré, le bot devrait répondre avec ceci :
 
@@ -73,6 +75,8 @@ Sur Discord, tapez la commande `!aide`, si tout est bien configuré, le bot devr
 <h2 id="contribuer">Contribuer</h2>
 
 Bien que les fonctionnalités ont chacune une priorité, vous pouvez quand même ajouter celles avec une priorité plus basse malgré d'autres qui ont une priorité plus importante.
+
+Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, veuillez utiliser la documentation de l'API située [ici](https://github.com/EduWireApps/ecoledirecte-api-docs). 
 
 **Priorité : Haute**
 
@@ -89,13 +93,27 @@ Bien que les fonctionnalités ont chacune une priorité, vous pouvez quand même
 - [ ] Timeline
 - [ ] Documents administratifs
 - [ ] Leaderboard des notes
+- [ ] MP lors d'une nouvelle note/nouveaux devoirs/observations
 
 **Priorité : Basse**
 
 - [ ] QCMs
 - [ ] Manuels numériques
 - [ ] Vie de la classe
-- [ ] Espaces de travail
-- [ ] Cloud
-- [ ] Téléchargement
-- [ ] Messagerie
+- [ ] Espaces de travail (non-implémentée)
+- [ ] Cloud (non-implémentée)
+- [ ] Téléchargement (non-implémentée)
+- [ ] Messagerie (non-implémentée)
+
+<h2 id="remerciements">Remerciements</h2>
+
+- **L'équipe derrière la [documentation de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Le bot n'aurait jamais vu le jour sans eux !
+- **@BinaryBytecode** : Aide et conseils
+- **Aleocraft** : Testeur (pas sur GitHub)
+- **Vous 🫵** : Si vous contribuez, ou si vous utilisez ce bot !
+
+Merci à eux !
+
+<h2 id="license">License</h2>
+
+Ce bot est distribué sous la **Licence Publique Générale GNU version 3.0 (GPLv3)**. Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
