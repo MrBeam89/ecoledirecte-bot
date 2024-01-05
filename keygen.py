@@ -14,14 +14,23 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import yaml
 from secrets import token_bytes
+
 def getkey()->bytes:
+    # Obtenir le nom du fichier de la clé dans la config
+    DB_KEY_FILENAME = None
+    with open("config.yaml", "r") as config_file:
+        config = yaml.safe_load(config_file)
+        DB_KEY_FILENAME = config["DB_KEY_FILENAME"]
+
+    # Création/récupération de la clé
     try:
         # Ne modifie pas la clé si elle existe déjà
-        keyfile = open("keyfile.bin", "rb")
+        keyfile = open(f"{DB_KEY_FILENAME}", "rb")
     except FileNotFoundError:
         # Si la clé n'existe pas
-        keyfile = open("keyfile.bin", "wb+")
+        keyfile = open(f"{DB_KEY_FILENAME}", "wb+")
         keyfile.write(token_bytes(32))
         keyfile.seek(0)
     finally:

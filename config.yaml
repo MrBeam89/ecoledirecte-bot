@@ -1,0 +1,8 @@
+# Fichier de configuration du bot
+
+BOT_TOKEN_FILENAME : token.txt
+DB_KEY_FILENAME : keyfile.bin
+DB_FILENAME : db.sqlite3
+BOT_COMMAND_PREFIX : "!"
+LOGGING_LEVEL : 20 # 10 pour DEBUG, 20 pour INFO
+COOLDOWN : 5

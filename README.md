@@ -32,6 +32,7 @@ Possède plusieurs fonctionnalités telles que :
 
 - **Stockage des informations d'identification** : Utilise SQLite et AES-256 pour stocker vos identifiants chiffrés
 - **Journalisation** : Gardez une trace des actions effectuées par le bot ainsi que celles des utilisateurs
+- **Fichier de configuration** : Permet de changer les noms des fichiers, changer le préfixe des commandes, le niveau de journalisation et le cooldown entre les commandes
 - **Cahier de texte** : Obtenir les devoirs du jour sélectionné
 - **Emploi du temps** : Obtenir les cours du jour sélectionné
 - **Vie scolaire** : Voir vos absences, retards, punitions et encouragements
@@ -72,6 +73,12 @@ Sur Discord, tapez la commande `!aide`, si tout est bien configuré, le bot devr
 
 **:tada: Félicitations :tada: ! Le bot est prêt à être utilisé !**
 
+### Fichier de configuration
+
+Vous pouvez changer facilement les paramètres du bot en modifiant le fichier `config.yaml`.
+
+**⚠️ AVERTISSEMENT ⚠️ : Si vous contribuez, il est recommandé de garder les extensions de fichier par défaut dans le fichier de configuration pour éviter tout upload de fichiers sensibles.**
+
 <h2 id="contribuer">Contribuer</h2>
 
 Bien que les fonctionnalités ont chacune une priorité, vous pouvez quand même ajouter celles avec une priorité plus basse malgré d'autres qui ont une priorité plus importante.
@@ -85,7 +92,7 @@ Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, ve
 - [X] Emploi du temps
 - [ ] Notes
 - [X] Vie scolaire
-- [ ] Fichier de configuration
+- [X] Fichier de configuration
 
 **Priorité : Moyenne**
 

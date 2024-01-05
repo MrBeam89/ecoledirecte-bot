@@ -18,6 +18,8 @@ import discord
 from discord.ext import commands
 import logging
 import re
+import yaml
+
 import ecoledirecte
 import aes
 import keygen
@@ -25,23 +27,75 @@ import db_handler
 import b64
 import str_clean
 
-COOLDOWN = 5 # En secondes
-
-# Configuration du journal
-logging.basicConfig(level=logging.DEBUG, filename="log.log", filemode="a",
-                    format="%(asctime)s [%(levelname)s] %(message)s")
-
-# Paramètres du bot
-# PLACER TOKEN DANS LE FICHIER token.txt
-bot = commands.Bot(command_prefix="!", description="Bot EcoleDirecte", intents=discord.Intents.all())
+# Vérification fichier de configuration
 try:
-    logging.info("Ouverture du fichier token.txt")
-    token_file = open("token.txt", "r")
-    token = token_file.read()
+    BOT_TOKEN_FILENAME = DB_KEY_FILENAME = DB_FILENAME = BOT_COMMAND_PREFIX = LOGGING_LEVEL = COOLDOWN = None
+    print('Ouverture du fichier "config.yaml"...')
+    with open("config.yaml", "r") as config_file:
+        config = yaml.safe_load(config_file)
+        print('Ouverture de "config.yaml" réussie!')
+        BOT_TOKEN_FILENAME = config["BOT_TOKEN_FILENAME"]
+        DB_KEY_FILENAME = config['DB_KEY_FILENAME']
+        DB_FILENAME = config["DB_FILENAME"]
+        BOT_COMMAND_PREFIX = config["BOT_COMMAND_PREFIX"]
+        LOGGING_LEVEL = config["LOGGING_LEVEL"]
+        COOLDOWN = config["COOLDOWN"]
+        
+        config_file.close()
+
 except FileNotFoundError:
-    logging.error("Fichier introuvable! Placer token dans un fichier token.txt")
+    print('"config.yaml" est introuvable!')
     exit()
 
+# Vérification du fichier de token
+try:
+    print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME}"...')
+    token_file = open(f"{BOT_TOKEN_FILENAME}", "r")
+    print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME} réussie!"')
+    bot_token = token_file.read()
+    token_file.close()
+except FileNotFoundError:
+    print(f"Fichier introuvable! Placer token dans le fichier {bot_token_file}")
+    exit()
+
+# Vérification du fichier de clé de DB
+try:
+    print(f'Ouverture du fichier "{DB_KEY_FILENAME}"...')
+    db_key_file = open(f"{DB_KEY_FILENAME}", "r")
+    print(f'Ouverture du fichier "{DB_KEY_FILENAME}", réussie!')
+    db_key_file.close()
+
+except FileNotFoundError:
+    print(f"Fichier introuvable! Placer clé de DB dans le fichier {bot_token_file}")
+
+# Vérification du préfixe du bot
+if not isinstance(BOT_COMMAND_PREFIX, str):
+    print("Préfixe de commande de bot invalide!")
+    exit()
+else:
+    print("Préfixe de commande de bot valide!")
+
+# Vérification du niveau de journalisation
+if not isinstance(LOGGING_LEVEL, int):
+    print("Niveau de journalisation invalide!")
+    exit()
+else:
+    print("Niveau de journalisation valide!")
+
+# Vérification du cooldown
+if not isinstance(COOLDOWN, int):
+    print("Cooldown invalide!")
+    exit()
+else:
+    print("Cooldown valide!")
+
+print("Configuration valide!")
+
+# Application de la configuration
+bot = commands.Bot(command_prefix=BOT_COMMAND_PREFIX, description="Bot EcoleDirecte", intents=discord.Intents.all())
+logging.basicConfig(level=LOGGING_LEVEL, filename="log.log", filemode="a",
+                    format="%(asctime)s [%(levelname)s] %(message)s")
+                  
 # Au démarrage du bot
 @bot.event
 async def on_ready():
@@ -71,18 +125,18 @@ async def on_command_error(contexte, error):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def aide(contexte):
-    aide_msg = '''**EcoleDirecte Bot** par Raticlette (@mrbeam89_)
+    aide_msg = f'''**EcoleDirecte Bot** par Raticlette (@mrbeam89_)
 EcoleDirecte dans Discord!
 Commandes disponibles :
-**!login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
+**{BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
 Envoyez-moi un MP en cas de souci!
-**!logout** : Se déconnecter
-**!cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
-**!edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
-**!vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
-**!aide** : Ce message
-**!remerciements** : Merci à eux!
-**!license** : Informations de license'''
+**{BOT_COMMAND_PREFIX}logout** : Se déconnecter
+**{BOT_COMMAND_PREFIX}cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
+**{BOT_COMMAND_PREFIX}edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
+**{BOT_COMMAND_PREFIX}vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
+**{BOT_COMMAND_PREFIX}aide** : Ce message
+**{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
+**{BOT_COMMAND_PREFIX}license** : Informations de license'''
     await contexte.send(aide_msg)
 
 # Remerciements
@@ -90,6 +144,7 @@ Envoyez-moi un MP en cas de souci!
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def remerciements(contexte):
     message = "Merci à...\n"
+    message += "**L'équipe derrière la [documentation de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !\n"
     message += "**Aleocraft (@aleocraft)** : Premier Bêta-testeur !\n"
     message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
     await contexte.send(message)
@@ -363,6 +418,6 @@ async def edt(contexte, date):
 
 # Démarrer le bot
 try:
-    bot.run(token)
+    bot.run(bot_token)
 except discord.errors.LoginFailure:
     logging.error("Token invalide")
