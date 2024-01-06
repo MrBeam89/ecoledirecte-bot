@@ -233,9 +233,10 @@ async def cdt(contexte, date):
         await contexte.send("Date invalide!")
         return None
 
-    await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
     if user_info:
+        await contexte.send(":hourglass: Veuillez patienter...")
+        
         # Récuperer identifiants et données
         username = aes.decrypt_aes(user_info[2], keygen.getkey())
         password = aes.decrypt_aes(user_info[3], keygen.getkey())
@@ -274,9 +275,10 @@ async def cdt(contexte, date):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def vie_scolaire(contexte):
-    await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
     if user_info:
+        await contexte.send(":hourglass: Veuillez patienter...")
+
         # Récuperer identifiants et données
         username = aes.decrypt_aes(user_info[2], keygen.getkey())
         password = aes.decrypt_aes(user_info[3], keygen.getkey())
@@ -367,6 +369,11 @@ async def vie_scolaire(contexte):
         if login_data["code"] == 505:
             logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
             await contexte.send("Identifiant et/ou mot de passe invalide!")
+    
+    # Si identifiants changés
+    else:
+        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de !vie_scolaire sans être connecte")
 
 # Emploi du temps
 @bot.command()
@@ -377,9 +384,10 @@ async def edt(contexte, date):
         await contexte.send("Date invalide!")
         return None
 
-    await contexte.send(":hourglass: Veuillez patienter...")
     user_info = db_handler.fetch_user_info(contexte.author.id)
     if user_info:
+        await contexte.send(":hourglass: Veuillez patienter...")
+        
         # Récuperer identifiants et données
         username = aes.decrypt_aes(user_info[2], keygen.getkey())
         password = aes.decrypt_aes(user_info[3], keygen.getkey())
@@ -415,6 +423,11 @@ async def edt(contexte, date):
         # Si identifiants changés
         if login_data["code"] == 505:
             await contexte.send("Identifiant et/ou mot de passe invalide!")
+        
+    # Si identifiants changés
+    else:
+        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
 
 # Démarrer le bot
 try:
