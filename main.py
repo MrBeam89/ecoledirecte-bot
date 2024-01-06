@@ -27,6 +27,8 @@ import db_handler
 import b64
 import str_clean
 
+print(f"{'-'*30}\nEcoleDirecte Bot par MrBeam89_\n{'-'*30}")
+
 # Vérification fichier de configuration
 try:
     BOT_TOKEN_FILENAME = DB_KEY_FILENAME = DB_FILENAME = BOT_COMMAND_PREFIX = LOGGING_LEVEL = COOLDOWN = None
@@ -45,6 +47,7 @@ try:
 
 except FileNotFoundError:
     print('"config.yaml" est introuvable!')
+    input("Appuyez sur Entree pour quitter...")
     exit()
 
 # Vérification du fichier de token
@@ -56,6 +59,7 @@ try:
     token_file.close()
 except FileNotFoundError:
     print(f"Fichier introuvable! Placer token dans le fichier {bot_token_file}")
+    input("Appuyez sur Entree pour quitter...")
     exit()
 
 # Vérification du fichier de clé de DB
@@ -67,10 +71,12 @@ try:
 
 except FileNotFoundError:
     print(f"Fichier introuvable! Placer clé de DB dans le fichier {bot_token_file}")
+    input("Appuyez sur Entree pour quitter...")
 
 # Vérification du préfixe du bot
 if not isinstance(BOT_COMMAND_PREFIX, str):
     print("Préfixe de commande de bot invalide!")
+    input("Appuyez sur Entree pour quitter...")
     exit()
 else:
     print("Préfixe de commande de bot valide!")
@@ -78,6 +84,7 @@ else:
 # Vérification du niveau de journalisation
 if not isinstance(LOGGING_LEVEL, int):
     print("Niveau de journalisation invalide!")
+    input("Appuyez sur Entree pour quitter...")
     exit()
 else:
     print("Niveau de journalisation valide!")
@@ -85,11 +92,12 @@ else:
 # Vérification du cooldown
 if not isinstance(COOLDOWN, int):
     print("Cooldown invalide!")
+    input("Appuyez sur Entree pour quitter...")
     exit()
 else:
     print("Cooldown valide!")
 
-print("Configuration valide!")
+print("Configuration valide!\nDémarrage du bot...")
 
 # Application de la configuration
 bot = commands.Bot(command_prefix=BOT_COMMAND_PREFIX, description="Bot EcoleDirecte", intents=discord.Intents.all())
@@ -99,7 +107,7 @@ logging.basicConfig(level=LOGGING_LEVEL, filename="log.log", filemode="a",
 # Au démarrage du bot
 @bot.event
 async def on_ready():
-    logging.info("Bot pret!")
+    print("Bot pret!\nVeuillez regarder log.log")
 
 # Vérifie si la date est valide
 def date_valide(input_string):
