@@ -17,10 +17,6 @@
 import sqlite3
 import yaml
 
-from ecoledirecte import login
-from aes import *
-from keygen import *
-
 from config import CONFIG_FILENAME
 
 # Obtenir le nom de la base de données
