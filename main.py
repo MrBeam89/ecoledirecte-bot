@@ -18,8 +18,8 @@ import discord
 from discord.ext import commands
 import logging
 import re
-import yaml
 
+import config
 import ecoledirecte
 import aes
 import keygen
@@ -29,75 +29,14 @@ import str_clean
 
 print(f"{'-'*30}\nEcoleDirecte Bot par MrBeam89_\n{'-'*30}")
 
-# Vérification fichier de configuration
-try:
-    BOT_TOKEN_FILENAME = DB_KEY_FILENAME = DB_FILENAME = BOT_COMMAND_PREFIX = LOGGING_LEVEL = COOLDOWN = None
-    print('Ouverture du fichier "config.yaml"...')
-    with open("config.yaml", "r") as config_file:
-        config = yaml.safe_load(config_file)
-        print('Ouverture de "config.yaml" réussie!')
-        BOT_TOKEN_FILENAME = config["BOT_TOKEN_FILENAME"]
-        DB_KEY_FILENAME = config['DB_KEY_FILENAME']
-        DB_FILENAME = config["DB_FILENAME"]
-        BOT_COMMAND_PREFIX = config["BOT_COMMAND_PREFIX"]
-        LOGGING_LEVEL = config["LOGGING_LEVEL"]
-        COOLDOWN = config["COOLDOWN"]
-        
-        config_file.close()
-
-except FileNotFoundError:
-    print('"config.yaml" est introuvable!')
-    input("Appuyez sur Entree pour quitter...")
-    exit()
-
-# Vérification du fichier de token
-try:
-    print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME}"...')
-    token_file = open(f"{BOT_TOKEN_FILENAME}", "r")
-    print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME} réussie!"')
-    bot_token = token_file.read()
-    token_file.close()
-except FileNotFoundError:
-    print(f"Fichier introuvable! Placer token dans le fichier {bot_token_file}")
-    input("Appuyez sur Entree pour quitter...")
-    exit()
-
-# Vérification du fichier de clé de DB
-try:
-    print(f'Ouverture du fichier "{DB_KEY_FILENAME}"...')
-    db_key_file = open(f"{DB_KEY_FILENAME}", "r")
-    print(f'Ouverture du fichier "{DB_KEY_FILENAME}", réussie!')
-    db_key_file.close()
-
-except FileNotFoundError:
-    print(f"Fichier introuvable! Placer clé de DB dans le fichier {bot_token_file}")
-    input("Appuyez sur Entree pour quitter...")
-
-# Vérification du préfixe du bot
-if not isinstance(BOT_COMMAND_PREFIX, str):
-    print("Préfixe de commande de bot invalide!")
-    input("Appuyez sur Entree pour quitter...")
-    exit()
-else:
-    print("Préfixe de commande de bot valide!")
-
-# Vérification du niveau de journalisation
-if not isinstance(LOGGING_LEVEL, int):
-    print("Niveau de journalisation invalide!")
-    input("Appuyez sur Entree pour quitter...")
-    exit()
-else:
-    print("Niveau de journalisation valide!")
-
-# Vérification du cooldown
-if not isinstance(COOLDOWN, int):
-    print("Cooldown invalide!")
-    input("Appuyez sur Entree pour quitter...")
-    exit()
-else:
-    print("Cooldown valide!")
-
-print("Configuration valide!\nDémarrage du bot...")
+# Récupération de la configuration
+bot_config = config.get_config()
+BOT_TOKEN_FILENAME = bot_config["BOT_TOKEN_FILENAME"]
+DB_KEY_FILENAME = bot_config["DB_KEY_FILENAME"]
+DB_FILENAME = bot_config["DB_FILENAME"]
+BOT_COMMAND_PREFIX = bot_config["BOT_COMMAND_PREFIX"]
+LOGGING_LEVEL = bot_config["LOGGING_LEVEL"]
+COOLDOWN = bot_config ["COOLDOWN"]
 
 # Application de la configuration
 bot = commands.Bot(command_prefix=BOT_COMMAND_PREFIX, description="Bot EcoleDirecte", intents=discord.Intents.all())
@@ -438,6 +377,9 @@ async def edt(contexte, date):
         logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
 
 # Démarrer le bot
+with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
+    bot_token = BOT_TOKEN_FILE.read()
+
 try:
     bot.run(bot_token)
 except discord.errors.LoginFailure:

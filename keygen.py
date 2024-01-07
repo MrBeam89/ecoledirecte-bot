@@ -17,10 +17,12 @@
 import yaml
 from secrets import token_bytes
 
+from config import CONFIG_FILENAME
+
 def getkey()->bytes:
     # Obtenir le nom du fichier de la clé dans la config
     DB_KEY_FILENAME = None
-    with open("config.yaml", "r") as config_file:
+    with open(f"{CONFIG_FILENAME}", "r") as config_file:
         config = yaml.safe_load(config_file)
         DB_KEY_FILENAME = config["DB_KEY_FILENAME"]
 

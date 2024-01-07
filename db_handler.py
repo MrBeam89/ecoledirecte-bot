@@ -21,8 +21,10 @@ from ecoledirecte import login
 from aes import *
 from keygen import *
 
+from config import CONFIG_FILENAME
+
 # Obtenir le nom de la base de données
-config_file = open("config.yaml", "r")
+config_file = open(f"{CONFIG_FILENAME}", "r")
 config = yaml.safe_load(config_file)
 DB_FILENAME = config["DB_FILENAME"]
 
