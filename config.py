@@ -46,11 +46,11 @@ def get_config():
         print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME} réussie!"')
         token_file.close()
     except FileNotFoundError:
-        print(f"Fichier introuvable! Placer token dans le fichier {bot_token_file}")
+        print(f"Fichier introuvable! Placez le token dans le fichier {bot_token_file}")
         input("Appuyez sur Entree pour quitter...")
         exit()
 
-    # Vérification du fichier de clé de DB
+    # Vérification du fichier de clé pour la base de données
     try:
         print(f'Ouverture du fichier "{DB_KEY_FILENAME}"...')
         db_key_file = open(f"{DB_KEY_FILENAME}", "r")
@@ -60,6 +60,16 @@ def get_config():
     except FileNotFoundError:
         print(f"Fichier introuvable! Placer clé de DB dans le fichier {bot_token_file}")
         input("Appuyez sur Entree pour quitter...")
+
+    # Vérification du fichier de la base de données
+    try:
+        print(f'Ouverture du fichier "{DB_FILENAME}"...')
+        db_key_file = open(f"{DB_FILENAME}", "r")
+        print(f'Ouverture du fichier "{DB_FILENAME}" réussie!')
+        db_key_file.close()
+
+    except FileNotFoundError:
+        print(f'Fichier introuvable! Création de la base de données "{DB_FILENAME}"...')
 
     # Vérification du préfixe du bot
     if not isinstance(BOT_COMMAND_PREFIX, str):
