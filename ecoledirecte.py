@@ -31,6 +31,7 @@ urls = {
             "QCMS_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/qcms/0/associations.awp?verbe=get&v=4.44.1",
             "MANUELS NUMERIQUES_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/manuelsNumeriques.awp?verbe=get&v=4.44.1",
             "VIE_DE_CLASSE_URL": f"https://api.ecoledirecte.com/v3/Classes/{{classe_id}}/viedelaclasse.awp?verbe=get&v=4.44.1",
+            "FORMULAIRES_URL": "https://api.ecoledirecte.com/v3/edforms.awp?verbe=getlist&v=4.46.3"
     }
 
 # En-tête, nécessaire pour toutes les requêtes
@@ -254,3 +255,20 @@ def vie_de_classe(token, classe_id):
     vie_de_classe_reponse = requests.post(url=url, data=vie_de_classe_request, headers=header)
 
     return vie_de_classe_reponse
+
+def formulaires(eleve_id, token, annee_scolaire):
+    '''
+    formulaires : Formulaires
+    Arguments :
+    eleve_id : votre identifiant élève
+    token : votre token
+    annee_scolaire : année scolaire sous le format AAAA-AAAA
+    Renvoie (si réussi) :
+    formulaires_reponse : réponse d'EcoleDirecte pour les formulaires
+    '''
+
+    url = urls["FORMULAIRES_URL"].format(eleve_id=eleve_id, annee_scolaire=annee_scolaire)
+    formulaires_request = f'data={{"token": "{token}", "anneeForms": "{annee_scolaire}", "typeEntity": "E", "idEntity": {eleve_id}}}'
+    formulaires_reponse = requests.post(url=url, data=formulaires_request, headers=header)
+    
+    return formulaires_reponse

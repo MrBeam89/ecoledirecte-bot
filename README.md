@@ -107,6 +107,7 @@ Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, ve
 - [ ] QCMs
 - [ ] Manuels numériques
 - [ ] Vie de la classe
+- [ ] Formulaires
 - [ ] Espaces de travail (non-implémentée)
 - [ ] Cloud (non-implémentée)
 - [ ] Téléchargement (non-implémentée)
