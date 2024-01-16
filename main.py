@@ -30,13 +30,13 @@ import str_clean
 print(f"{'-'*30}\nEcoleDirecte Bot par MrBeam89_\n{'-'*30}")
 
 # Récupération de la configuration
-bot_config = config.get_config()
-BOT_TOKEN_FILENAME = bot_config["BOT_TOKEN_FILENAME"]
-DB_KEY_FILENAME = bot_config["DB_KEY_FILENAME"]
-DB_FILENAME = bot_config["DB_FILENAME"]
-BOT_COMMAND_PREFIX = bot_config["BOT_COMMAND_PREFIX"]
-LOGGING_LEVEL = bot_config["LOGGING_LEVEL"]
-COOLDOWN = bot_config ["COOLDOWN"]
+BOT_CONFIG = config.get_config()
+BOT_TOKEN_FILENAME = BOT_CONFIG["BOT_TOKEN_FILENAME"]
+DB_KEY_FILENAME = BOT_CONFIG["DB_KEY_FILENAME"]
+DB_FILENAME = BOT_CONFIG["DB_FILENAME"]
+BOT_COMMAND_PREFIX = BOT_CONFIG["BOT_COMMAND_PREFIX"]
+LOGGING_LEVEL = BOT_CONFIG["LOGGING_LEVEL"]
+COOLDOWN = BOT_CONFIG["COOLDOWN"]
 
 # Application de la configuration
 bot = commands.Bot(command_prefix=BOT_COMMAND_PREFIX, description="Bot EcoleDirecte", intents=discord.Intents.all())
