@@ -31,7 +31,7 @@ def get_config():
             BOT_COMMAND_PREFIX = config["BOT_COMMAND_PREFIX"]
             LOGGING_LEVEL = config["LOGGING_LEVEL"]
             COOLDOWN = config["COOLDOWN"]
-            
+
             config_file.close()
 
     except FileNotFoundError:
@@ -46,7 +46,7 @@ def get_config():
         print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME} réussie!"')
         token_file.close()
     except FileNotFoundError:
-        print(f"Fichier introuvable! Placez le token dans le fichier {bot_token_file}")
+        print(f"Fichier introuvable! Placez le token dans le fichier {BOT_TOKEN_FILENAME}")
         input("Appuyez sur Entree pour quitter...")
         exit()
 
@@ -94,7 +94,7 @@ def get_config():
         exit()
     else:
         print("Cooldown valide!")
-    
+
     # Renvoie la configuration
     print("Configuration valide!")
     return config
