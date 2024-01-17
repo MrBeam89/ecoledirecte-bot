@@ -12,6 +12,8 @@
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/MrBeam89/ecoledirecte-bot">
     <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/MrBeam89/ecoledirecte-bot">
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/MrBeam89/ecoledirecte-bot?style=flat">
+    <br />
+    <img alt="Min Python version : 3.8+" src="https://img.shields.io/badge/python-3.8+-blue">
 </p>
 <p align="center">
     <a href="#presentation">Présentation</a>
@@ -48,6 +50,7 @@ Vous aurez besoin des outils suivants :
 - Module `discord` : `pip3 install discord.py`
 - Module `cryptography` : `pip3 install cryptography`
 - Module `requests` : `pip3 install requests`
+- Module `yaml` : `pip3 install pyyaml`
 
 ### Installation
 
