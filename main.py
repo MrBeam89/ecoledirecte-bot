@@ -18,6 +18,8 @@ import discord
 from discord.ext import commands
 import logging
 import re
+import datetime
+import os
 
 import config
 import ecoledirecte
@@ -38,15 +40,31 @@ BOT_COMMAND_PREFIX = BOT_CONFIG["BOT_COMMAND_PREFIX"]
 LOGGING_LEVEL = BOT_CONFIG["LOGGING_LEVEL"]
 COOLDOWN = BOT_CONFIG["COOLDOWN"]
 
-# Application de la configuration
+# Journalisation
+year, month, day, hour, minute, second = datetime.datetime.now().timetuple()[:6]
+log_filename = f"log_{year}-{month}-{day}_{hour}-{minute}-{second}.log" # Format du nom de fichier
+log_directory_name = "logs"
+log_directory_path = os.path.join(os.getcwd(), log_directory_name)
+
+if not os.path.exists(log_directory_path):
+    print(f'Création du répertoire "{log_directory_name}"...')
+    os.mkdir(log_directory_path)
+    print(f'Répertoire "{log_directory_name}" créé!')
+else:
+    print(f'Répertoire "{log_directory_name}" existe déjà!')
+
+log_path = os.path.join(log_directory_path, log_filename)
+
+# Application de la configuration et de la journalisation
 bot = commands.Bot(command_prefix=BOT_COMMAND_PREFIX, description="Bot EcoleDirecte", intents=discord.Intents.all())
-logging.basicConfig(level=LOGGING_LEVEL, filename="log.log", filemode="a",
+print(f'Création du fichier de journalisation dans "{log_path}".')
+logging.basicConfig(level=LOGGING_LEVEL, filename=log_path, filemode="w",
                     format="%(asctime)s [%(levelname)s] %(message)s")
-                  
+
 # Au démarrage du bot
 @bot.event
 async def on_ready():
-    print("Bot pret!\nVeuillez regarder log.log")
+    print("Bot prêt!")
 
 # Vérifie si la date est valide
 def date_valide(input_string):
@@ -375,6 +393,11 @@ async def edt(contexte, date):
     else:
         await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
         logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
+
+# Notes
+@bot.command()
+async def notes(contexte):
+    pass
 
 # Démarrer le bot
 with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:

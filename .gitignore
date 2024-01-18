@@ -6,5 +6,6 @@ __pycache__/
 *.bin
 *.log
 *.txt
+logs/
 
 TODO.md
