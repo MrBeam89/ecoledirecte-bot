@@ -38,6 +38,7 @@ Possède plusieurs fonctionnalités telles que :
 - **Cahier de texte** : Obtenir les devoirs du jour sélectionné
 - **Emploi du temps** : Obtenir les cours du jour sélectionné
 - **Vie scolaire** : Voir vos absences, retards, punitions et encouragements
+- **Notes** *(WIP)* : Récupérer vos notes 
 
 <h2 id="guide_demarrage">Guide de démarrage</h2>
 
@@ -93,7 +94,7 @@ Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, ve
 - [X] Connexion
 - [X] Cahier de texte
 - [X] Emploi du temps
-- [ ] Notes
+- [X] Notes (WIP)
 - [X] Vie scolaire
 - [X] Fichier de configuration
 

@@ -101,7 +101,8 @@ Envoyez-moi un MP en cas de souci!
 **{BOT_COMMAND_PREFIX}vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
 **{BOT_COMMAND_PREFIX}aide** : Ce message
 **{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
-**{BOT_COMMAND_PREFIX}license** : Informations de license'''
+**{BOT_COMMAND_PREFIX}license** : Informations de license
+**{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes'''
     await contexte.send(aide_msg)
 
 # Remerciements
@@ -394,10 +395,51 @@ async def edt(contexte, date):
         await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
         logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
 
-# Notes
+# Notes (WIP)
 @bot.command()
 async def notes(contexte):
-    pass
+    user_info = db_handler.fetch_user_info(contexte.author.id)
+    if user_info:
+        await contexte.send(":hourglass: Veuillez patienter...")
+        
+        # Récuperer identifiants et données
+        username = aes.decrypt_aes(user_info[2], keygen.getkey())
+        password = aes.decrypt_aes(user_info[3], keygen.getkey())
+        login_data = ecoledirecte.login(username, password).json()
+
+        # Si identifiants corrects
+        if login_data["code"] == 200:
+            token = login_data["token"]
+            eleve_id = login_data["data"]["accounts"][0]["id"]
+            notes_data = ecoledirecte.notes(eleve_id, token).json()["data"]
+            notes = notes_data["notes"]
+            
+            message_list = ["**:100: Notes (WIP)**\n"] # Pour scinder les messages trops longs en plusieurs morceaux (et titre)
+            for index in range(len(notes)):
+                note = notes[index]
+                libelle  = note["libelleMatiere"]
+                valeur = note["valeur"]
+                notesur = note["noteSur"]
+                devoir = note["devoir"]
+                text = f"{libelle} : {valeur}/{notesur} pour {devoir}\n"
+
+                # Contourner la limite de caractères
+                if len(message_list[-1] + text) >= 2000:
+                    message_list.append(text)
+                else:
+                    message_list[-1] += text
+
+            for message in message_list:
+                await contexte.send(message)
+
+        # Si identifiants changés
+        if login_data["code"] == 505:
+            await contexte.send("Identifiant et/ou mot de passe invalide!")
+        
+    # Si identifiants changés
+    else:
+        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
 
 # Démarrer le bot
 with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
