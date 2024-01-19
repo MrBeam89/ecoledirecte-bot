@@ -58,8 +58,11 @@ def get_config():
         db_key_file.close()
 
     except FileNotFoundError:
-        print(f"Fichier introuvable! Placer clé de DB dans le fichier {bot_token_file}")
-        input("Appuyez sur Entree pour quitter...")
+        from keygen import getkey
+        print(f"Fichier introuvable! Création d'une nouvelle clé dans le fichier {DB_KEY_FILENAME}...")
+        getkey()
+        print(f"Création d'une nouvelle clé dans le fichier {DB_KEY_FILENAME} réussie!")
+        print("/!\ ATTENTION /!\ La base de données (si non vide) ne fonctionnera pas correctement avec la nouvelle clé.")
 
     # Vérification du fichier de la base de données
     try:
