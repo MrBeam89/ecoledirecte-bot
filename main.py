@@ -82,7 +82,7 @@ def date_valide(input_string):
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def on_command_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-        await contexte.send("Commande invalide! Utilisez **!aide** pour afficher la liste des commandes disponibles")
+        await contexte.send(f"Commande invalide! Utilisez **{BOT_COMMAND_PREFIX}aide** pour afficher la liste des commandes disponibles")
         logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
 
 
@@ -174,8 +174,8 @@ async def login(contexte, username, password):
 @login.error
 async def login_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-        logging.info(f"Syntaxe de !login invalide par l'utilisateur {contexte.author.name}")
-        await contexte.send("Syntaxe invalide! : Utilisez !login <identifiant> <motdepasse>")
+        logging.info(f"Syntaxe de {BOT_COMMAND_PREFIX}login invalide par l'utilisateur {contexte.author.name}")
+        await contexte.send(f"Syntaxe invalide! : Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
 
 
 # Déconnexion
@@ -225,7 +225,7 @@ async def cdt(contexte, date):
                 except Exception:
                     pass
             await contexte.send(message)
-            logging.info(f"Utilisateur {contexte.author.name} a utilisé !cdt")
+            logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
         
         # Si identifiants changés
         if login_data['code'] == 505:
@@ -234,8 +234,8 @@ async def cdt(contexte, date):
 
     # Si non connecté
     else:
-        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de !cdt sans être connecte")
+        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}cdt sans être connecte")
 
 # Vie scolaire
 @bot.command()
@@ -338,8 +338,8 @@ async def vie_scolaire(contexte):
     
     # Si identifiants changés
     else:
-        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de !vie_scolaire sans être connecte")
+        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}vie_scolaire sans être connecte")
 
 # Emploi du temps
 @bot.command()
@@ -392,8 +392,8 @@ async def edt(contexte, date):
         
     # Si identifiants changés
     else:
-        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
+        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}edt sans être connecte")
 
 # Notes (WIP)
 @bot.command()
@@ -438,8 +438,8 @@ async def notes(contexte):
         
     # Si identifiants changés
     else:
-        await contexte.send("Vous n'êtes pas connecté! Utilisez !login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de !edt sans être connecte")
+        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}notes sans être connecte")
 
 # Démarrer le bot
 with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
