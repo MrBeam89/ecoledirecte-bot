@@ -43,10 +43,10 @@ def get_config():
     try:
         print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME}"...')
         token_file = open(f"{BOT_TOKEN_FILENAME}", "r")
-        print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME} réussie!"')
+        print(f'Ouverture du fichier "{BOT_TOKEN_FILENAME}" réussie!')
         token_file.close()
     except FileNotFoundError:
-        print(f"Fichier introuvable! Placez le token dans le fichier {BOT_TOKEN_FILENAME}")
+        print(f'Fichier introuvable! Placez le token dans le fichier "{BOT_TOKEN_FILENAME}"')
         input("Appuyez sur Entree pour quitter...")
         exit()
 
@@ -59,9 +59,9 @@ def get_config():
 
     except FileNotFoundError:
         from keygen import getkey
-        print(f"Fichier introuvable! Création d'une nouvelle clé dans le fichier {DB_KEY_FILENAME}...")
+        print(f'Fichier introuvable! Création d\'une nouvelle clé dans le fichier "{DB_KEY_FILENAME}"...')
         getkey()
-        print(f"Création d'une nouvelle clé dans le fichier {DB_KEY_FILENAME} réussie!")
+        print(f'Création d\'une nouvelle clé dans le fichier "{DB_KEY_FILENAME}" réussie!')
         print("/!\ ATTENTION /!\ La base de données (si non vide) ne fonctionnera pas correctement avec la nouvelle clé.")
 
     # Vérification du fichier de la base de données
