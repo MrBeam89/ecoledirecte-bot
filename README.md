@@ -73,7 +73,7 @@ Vous aurez besoin des outils suivants :
 
 Sur Discord, tapez la commande `!aide`, si tout est bien configuré, le bot devrait répondre avec ceci :
 
-![Commande !aide utilisée](docs/aide.png)
+![Commande !aide utilisée](docs/aide_embed.png)
 
 **:tada: Félicitations :tada: ! Le bot est prêt à être utilisé !**
 
