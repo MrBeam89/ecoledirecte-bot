@@ -365,10 +365,13 @@ async def edt(contexte, date):
         if login_data["code"] == 200:
             token = login_data["token"]
             eleve_id = login_data["data"]["accounts"][0]["id"]
+
             edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
-            
             edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
-            message = f":calendar_spiral: **Emploi du temps du {date}**\n"
+            
+            # Contenu de l'embed
+            titre = f":calendar_spiral:  Emploi du temps du {date}"
+            message = ""
             nb_de_cours = 0
             for cours in edt_data:
                 if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
@@ -383,10 +386,13 @@ async def edt(contexte, date):
                         message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
                         nb_de_cours += 1
             
+            
             if nb_de_cours > 0:
-                await contexte.send(message)
+                embed = discord.Embed(title=titre, description=message)
+                await contexte.send(embed=embed)
             else:
-                await contexte.send("**:tada: Pas de cours ce jour-là !**")
+                embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**")
+                await contexte.send(embed=embed)
                 
         # Si identifiants changés
         if login_data["code"] == 505:
