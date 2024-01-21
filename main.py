@@ -84,6 +84,8 @@ async def on_command_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await contexte.send(f"Commande invalide! Utilisez **{BOT_COMMAND_PREFIX}aide** pour afficher la liste des commandes disponibles")
         logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+    else:
+        await contexte.send(error)
 
 
 # Aide
