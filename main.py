@@ -92,20 +92,26 @@ async def on_command_error(contexte, error):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def aide(contexte):
-    aide_msg = f'''**EcoleDirecte Bot** par Raticlette (@mrbeam89_)
-EcoleDirecte dans Discord!
+    titre = "**EcoleDirecte Bot** par Raticlette (@mrbeam89_)"
+    message = f'''
 Commandes disponibles :
 **{BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
-Envoyez-moi un MP en cas de souci!
 **{BOT_COMMAND_PREFIX}logout** : Se déconnecter
 **{BOT_COMMAND_PREFIX}cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
 **{BOT_COMMAND_PREFIX}edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
 **{BOT_COMMAND_PREFIX}vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
+**{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes
 **{BOT_COMMAND_PREFIX}aide** : Ce message
 **{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
-**{BOT_COMMAND_PREFIX}license** : Informations de license
-**{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes'''
-    await contexte.send(aide_msg)
+**{BOT_COMMAND_PREFIX}license** : Informations de license'''
+    footer = "Envoyez-moi un MP en cas de souci!"
+    github_repo_url = "https://github.com/MrBeam89/ecoledirecte-bot"
+
+    embed = discord.Embed(title=titre, description=message, url=github_repo_url)
+    embed.set_thumbnail(url="https://raw.githubusercontent.com/MrBeam89/ecoledirecte-bot/main/docs/bot_icon.png")
+    embed.set_footer(text=footer)
+
+    await contexte.send(embed=embed)
 
 # Remerciements
 @bot.command()
