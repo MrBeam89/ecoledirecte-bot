@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import yaml
+import re
 
 CONFIG_FILENAME = "config.yaml"
 
@@ -31,6 +32,7 @@ def get_config():
             BOT_COMMAND_PREFIX = config["BOT_COMMAND_PREFIX"]
             LOGGING_LEVEL = config["LOGGING_LEVEL"]
             COOLDOWN = config["COOLDOWN"]
+            EMBED_COLOR = config["EMBED_COLOR"]
 
             config_file.close()
 
@@ -97,6 +99,31 @@ def get_config():
         exit()
     else:
         print("Cooldown valide!")
+
+    # Vérification de la couleur de l'embed
+    if not isinstance(EMBED_COLOR, int):
+        print("Couleur de l'embed invalide!")
+        input("Appuyez sur Entree pour quitter...")
+        exit()
+    else:
+        # Vérifie si le format 0x?????? est respecté (ignore les zéros en trop)
+        hex_str = format(EMBED_COLOR, '06x')
+        if len(hex_str) != 6:
+            print("Couleur de l'embed invalide!")
+            input("Appuyez sur Entree pour quitter...")
+            exit()
+
+        else:
+            # Vérifie si le code couleur est valide
+            r = int(hex_str[0:2], 16)
+            v = int(hex_str[2:4], 16)
+            b = int(hex_str[4:6], 16)
+            if 0 <= r <= 255 and 0 <= v <= 255 and 0 <= b <= 255:
+                print("Couleur de l'embed valide!")
+            else:
+                print("Couleur de l'embed invalide!")
+                input("Appuyez sur Entree pour quitter...")
+                exit()
 
     # Renvoie la configuration
     print("Configuration valide!")

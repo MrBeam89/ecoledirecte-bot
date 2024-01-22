@@ -39,6 +39,7 @@ DB_FILENAME = BOT_CONFIG["DB_FILENAME"]
 BOT_COMMAND_PREFIX = BOT_CONFIG["BOT_COMMAND_PREFIX"]
 LOGGING_LEVEL = BOT_CONFIG["LOGGING_LEVEL"]
 COOLDOWN = BOT_CONFIG["COOLDOWN"]
+EMBED_COLOR = BOT_CONFIG["EMBED_COLOR"]
 
 # Journalisation
 year, month, day, hour, minute, second = datetime.datetime.now().timetuple()[:6]
@@ -107,7 +108,7 @@ Commandes disponibles :
     footer = "Envoyez-moi un MP en cas de souci!"
     github_repo_url = "https://github.com/MrBeam89/ecoledirecte-bot"
 
-    embed = discord.Embed(title=titre, description=message, url=github_repo_url)
+    embed = discord.Embed(title=titre, description=message, url=github_repo_url, color=EMBED_COLOR)
     embed.set_thumbnail(url="https://raw.githubusercontent.com/MrBeam89/ecoledirecte-bot/main/docs/bot_icon.png")
     embed.set_footer(text=footer)
 
@@ -394,10 +395,10 @@ async def edt(contexte, date):
             
             
             if nb_de_cours > 0:
-                embed = discord.Embed(title=titre, description=message)
+                embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
                 await contexte.send(embed=embed)
             else:
-                embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**")
+                embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**", color=EMBED_COLOR)
                 await contexte.send(embed=embed)
                 
         # Si identifiants changés
