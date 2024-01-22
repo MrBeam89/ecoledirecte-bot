@@ -80,14 +80,13 @@ def date_valide(input_string):
 
 # Erreures générales
 @bot.event
-@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def on_command_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await contexte.send(f"Commande invalide! Utilisez **{BOT_COMMAND_PREFIX}aide** pour afficher la liste des commandes disponibles")
         logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-    else:
+    # Afficher message d'exception si en niveau DEBUG
+    elif LOGGING_LEVEL == 10:
         await contexte.send(error)
-
 
 # Aide
 @bot.command()
@@ -191,6 +190,7 @@ async def login_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         logging.info(f"Syntaxe de {BOT_COMMAND_PREFIX}login invalide par l'utilisateur {contexte.author.name}")
         await contexte.send(f"Syntaxe invalide! : Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+
 
 
 # Déconnexion
