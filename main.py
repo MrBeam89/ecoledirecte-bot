@@ -104,7 +104,7 @@ Commandes disponibles :
 **{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes
 **{BOT_COMMAND_PREFIX}aide** : Ce message
 **{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
-**{BOT_COMMAND_PREFIX}license** : Informations de license'''
+**{BOT_COMMAND_PREFIX}license** : Informations de licence'''
     footer = "Envoyez-moi un MP en cas de souci!"
     github_repo_url = "https://github.com/MrBeam89/ecoledirecte-bot"
 
@@ -124,19 +124,20 @@ async def remerciements(contexte):
     message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
     await contexte.send(message)
 
-# License
+# Licence
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def license(contexte):
-    message = '''🤖 **Informations de Licence du Bot**
+    titre = "📜  **Informations de Licence du Bot**"
+    message = '''Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
 
-Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+**Texte Complet de la Licence :** [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html#license-text)
 
-📜 **Texte Complet de la Licence :**
-[GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/gpl-faq.fr.html).'''
+    
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
 
-Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, n'hésitez pas à contacter le développeur du bot.'''
-    await contexte.send(message)
+    await contexte.send(embed=embed)
 
 # Connexion
 @bot.command()
