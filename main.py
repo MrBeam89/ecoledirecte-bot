@@ -118,11 +118,16 @@ Commandes disponibles :
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def remerciements(contexte):
-    message = "Merci à...\n"
-    message += "**L'équipe derrière la [documentation de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !\n"
-    message += "**Aleocraft (@aleocraft)** : Premier Bêta-testeur !\n"
-    message += "**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)"
-    await contexte.send(message)
+    titre = ":clap:  **Remerciements**"
+    message = '''Merci à...
+**L'équipe derrière la [documentation (non-officielle mais excellente) de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !
+**Aleocraft (@aleocraft)** : Premier Bêta-testeur !
+**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)
+**:index_pointing_at_the_viewer: Vous** : Si vous utilisez ce bot ou si vous contribuez!'''
+    
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+
+    await contexte.send(embed=embed)
 
 # Licence
 @bot.command()
