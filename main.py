@@ -86,7 +86,7 @@ async def on_command_error(contexte, error):
         logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
     # Afficher message d'exception si en niveau DEBUG
     elif LOGGING_LEVEL == 10:
-        await contexte.send(error)
+        print(error)
 
 # Aide
 @bot.command()
@@ -172,16 +172,25 @@ async def login(contexte, username, password):
             nom = reponse_json["data"]["accounts"][0]["nom"]
             prenom = reponse_json["data"]["accounts"][0]["prenom"]
             classe = reponse_json["data"]["accounts"][0]["profile"]["classe"]["code"]
-            await contexte.send("Connexion réussie!")
-            await contexte.send("Connecté en tant que :")
-            await contexte.send(f"**Nom** : {nom}\n**Prénom** : {prenom}\n**Classe** : {classe}")
+
+            titre = ":white_check_mark:  **Connexion réussie!**"
+            message = "Connecté(e) en tant que :\n"
+            message += f"**Nom** : {nom}\n**Prénom** : {prenom}\n**Classe** : {classe}"
+
+            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+            await contexte.send(embed=embed)
                 
             logging.info(f"Authentification reussie de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id} avec le compte de {nom} {prenom} {classe}")
 
         # Si identifiants incorrects
         if reponse_json['code'] == 505:
+            titre = ':x:  **Connexion ratée!**'
+            message = "Identifiant et/ou mot de passe invalide!"
+
+            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+            await contexte.send(embed=embed)
+
             logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-            await contexte.send("Identifiant et/ou mot de passe invalide!")
 
 
 # Erreurs de !login
