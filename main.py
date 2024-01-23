@@ -161,10 +161,9 @@ async def login(contexte, username, password):
 
         # Si identifiants corrects
         if reponse_json['code'] == 200:
-            # Ajout du token encrypté, l'id d'élève et l'id de classe dans la base de donnée
+            # Ajout des identifiants chiffrés dans la base de données
             encrypted_username = aes.encrypt_aes(username, keygen.getkey())
             encrypted_password = aes.encrypt_aes(password, keygen.getkey())
-
             logging.info(f"Ajout des informations de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
             db_handler.add_user_info(contexte.author.id, encrypted_username, encrypted_password)
 
@@ -184,6 +183,7 @@ async def login(contexte, username, password):
 
         # Si identifiants incorrects
         if reponse_json['code'] == 505:
+            # Message de connexion ratée
             titre = ':x:  **Connexion ratée!**'
             message = "Identifiant et/ou mot de passe invalide!"
 

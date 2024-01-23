@@ -24,7 +24,7 @@
     ·
     <a href="#remerciements">Remerciements</a>
     ·
-    <a href="#license">License</a>
+    <a href="#licence">Licence</a>
 </p>
 <h2 id="presentation">Présentation</h2>
 
@@ -126,6 +126,6 @@ Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, ve
 
 Merci à eux !
 
-<h2 id="license">License</h2>
+<h2 id="licence">Licence</h2>
 
 Ce bot est distribué sous la **Licence Publique Générale GNU version 3.0 (GPLv3)**. Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
