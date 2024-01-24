@@ -214,7 +214,7 @@ async def logout(contexte):
         logging.info(f"Tentative de deconnexion ratee de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
 
 
-# Emploi du temps
+# Cahier de texte
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def cdt(contexte, date):
@@ -236,19 +236,23 @@ async def cdt(contexte, date):
         if login_data['code'] == 200:
             token = login_data["token"]
             eleve_id = login_data["data"]["accounts"][0]["id"]
-
-            message = ""
             cdt_data = ecoledirecte.cahier_de_texte(eleve_id, token, date).json()["data"]
 
-            message += f":pencil: **Devoirs à faire pour le {date}**\n\n"
+            titre = f":pencil:  **Devoirs à faire pour le {date}**\n\n"
+
+            # Liste des devoirs
+            message = ""
             for index in range(len(cdt_data["matieres"])):
                 try:
                     matiere = cdt_data["matieres"][index]["matiere"]
                     texte = str_clean.clean(b64.decode_base64(cdt_data["matieres"][index]["aFaire"]["contenu"]))
-                    message += f"**{matiere}** : {texte}\n\n"
+                    message += f"**{matiere}** : {texte}\n"
                 except Exception:
                     pass
-            await contexte.send(message)
+            
+            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+            await contexte.send(embed=embed)
+
             logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
         
         # Si identifiants changés
