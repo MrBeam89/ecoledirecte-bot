@@ -78,6 +78,30 @@ def date_valide(input_string):
             return True
     return False
 
+# Vérifie si les données de l'utilisateur existent dans la base de données
+def credentials_fetch(id):
+    user_info = db_handler.fetch_user_info(id)
+    if user_info:
+        username = aes.decrypt_aes(user_info[2], keygen.getkey())
+        password = aes.decrypt_aes(user_info[3], keygen.getkey())
+        return (username, password)
+    else:
+        return ()
+
+# Vérifie la validité des identifiants et renvoie le token et l'ID d'élève
+def credentials_check(username, password):    
+    login_data = ecoledirecte.login(username, password).json()
+    
+    # Si identifiants corrects
+    if login_data['code'] == 200:
+        token = login_data["token"]
+        eleve_id = login_data["data"]["accounts"][0]["id"]
+        return {"token": token, "eleve_id": eleve_id}
+    
+    # Si identifiants changés
+    if login_data['code'] == 505:
+        return ()
+
 # Erreures générales
 @bot.event
 async def on_command_error(contexte, error):
@@ -223,48 +247,47 @@ async def cdt(contexte, date):
         await contexte.send("Date invalide!")
         return None
 
-    user_info = db_handler.fetch_user_info(contexte.author.id)
-    if user_info:
-        await contexte.send(":hourglass: Veuillez patienter...")
-        
-        # Récuperer identifiants et données
-        username = aes.decrypt_aes(user_info[2], keygen.getkey())
-        password = aes.decrypt_aes(user_info[3], keygen.getkey())
-        login_data = ecoledirecte.login(username, password).json()
-        
-        # Si identifiants corrects
-        if login_data['code'] == 200:
-            token = login_data["token"]
-            eleve_id = login_data["data"]["accounts"][0]["id"]
-            cdt_data = ecoledirecte.cahier_de_texte(eleve_id, token, date).json()["data"]
-
-            titre = f":pencil:  **Devoirs à faire pour le {date}**\n\n"
-
-            # Liste des devoirs
-            message = ""
-            for index in range(len(cdt_data["matieres"])):
-                try:
-                    matiere = cdt_data["matieres"][index]["matiere"]
-                    texte = str_clean.clean(b64.decode_base64(cdt_data["matieres"][index]["aFaire"]["contenu"]))
-                    message += f"**{matiere}** : {texte}\n"
-                except Exception:
-                    pass
-            
-            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-            await contexte.send(embed=embed)
-
-            logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
-        
-        # Si identifiants changés
-        if login_data['code'] == 505:
-            logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-            await contexte.send("Identifiant et/ou mot de passe invalide!")
-
-    # Si non connecté
-    else:
+    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
+    identifiants = credentials_fetch(contexte.author.id)
+    if not identifiants:
         await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}cdt sans être connecte")
+        return None
+    
+    username = identifiants[0]
+    password = identifiants[1]
 
+    # Vérifie la validité des identifiants et obtenir token et ID d'élève
+    await contexte.send(":hourglass: Veuillez patienter...")   
+    api_credentials = credentials_check(username, password)
+    if not api_credentials:
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
+        return None
+
+    # Obtenir les infos pour l'API
+    token = api_credentials["token"]
+    eleve_id = api_credentials["eleve_id"]
+    cdt_data = ecoledirecte.cahier_de_texte(eleve_id, token, date).json()["data"]
+
+    # Contenu de l'embed
+    titre = f":pencil:  **Devoirs à faire pour le {date}**\n\n"
+
+    # Liste des devoirs
+    message = ""
+    for index in range(len(cdt_data["matieres"])):
+        try:
+            matiere = cdt_data["matieres"][index]["matiere"]
+            texte = str_clean.clean(b64.decode_base64(cdt_data["matieres"][index]["aFaire"]["contenu"]))
+            message += f"**{matiere}** : {texte}\n"
+        except Exception:
+            pass
+    
+    # Envoyer l'embed
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+    await contexte.send(embed=embed)
+    
+    logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
+        
 # Vie scolaire
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
