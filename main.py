@@ -282,10 +282,14 @@ async def cdt(contexte, date):
         except Exception:
             pass
     
+    # Si il n'y a pas de devoirs
+    if not message:
+        message = ":tada: **Pas de devoirs pour ce jour-là !**"
+
     # Envoyer l'embed
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
     await contexte.send(embed=embed)
-    
+
     logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
         
 # Vie scolaire
