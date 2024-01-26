@@ -296,105 +296,103 @@ async def cdt(contexte, date):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def vie_scolaire(contexte):
-    user_info = db_handler.fetch_user_info(contexte.author.id)
-    if user_info:
-        await contexte.send(":hourglass: Veuillez patienter...")
-
-        # Récuperer identifiants et données
-        username = aes.decrypt_aes(user_info[2], keygen.getkey())
-        password = aes.decrypt_aes(user_info[3], keygen.getkey())
-        login_data = ecoledirecte.login(username, password).json()
-
-        # Si identifiants corrects
-        if login_data["code"] == 200:
-            token = login_data["token"]
-            eleve_id = login_data["data"]["accounts"][0]["id"]
-
-            message = ""
-            vie_scolaire_data = ecoledirecte.vie_scolaire(eleve_id, token).json()["data"]
-
-            message += ":school: **Vie scolaire**\n\n"
-
-            # Absences et retards
-            absences = []
-            retards = []
-            
-            # Tri absence/retard
-            for element in vie_scolaire_data["absencesRetards"]:
-                if element["typeElement"] == "Absence":
-                    absences.append(element)
-                if element["typeElement"] == "Retard":
-                    retards.append(element)
-
-            # Message des absences
-            message +=  ":ghost: **Absences**\n"
-            message += f"{len(absences)} absence(s)\n"
-            for absence in absences:
-                date = absence["displayDate"]
-                if absence["justifie"] == True:
-                    justifiee = "Oui"
-                else:
-                    justifiee = "Non"
-                message += f"- {date}. Justifiée ? **{justifiee}**\n"
-
-            message += "\n"
-            
-            # Message des retards
-            message += ":hourglass: **Retards**\n"
-            message += f"{len(retards)} retard(s)\n"
-            for retard in retards:
-                date = retard["displayDate"]
-                duree = retard["libelle"]
-                if retard["justifiee"]:
-                    justifiee = "Oui"
-                else:
-                    justifiee = "Non"
-                message += f"- {date} de {duree}. Justifiée ? **{justifiee}**\n"
-            
-            message += "\n"
-
-            # Encouragements/punitions
-
-            encouragements = []
-            punitions = []
-
-            for element in vie_scolaire_data["sanctionsEncouragements"]:
-                if element["typeElement"] == "Punition":
-                    punitions.append(element)
-                else:
-                    encouragements.append(element)
-
-            # Encouragements
-            message += ":thumbsup: **Encouragements**\n"
-            message += f"{len(encouragements)} encouragement(s)\n"
-            for encouragement in encouragements:
-                date = encouragement["date"]
-                motif = encouragement["motif"]
-                message += f"- Le {date} pour {motif}"
-
-            message += "\n"
-
-            # Punitions
-            message += ":boom: **Punitions**\n"
-            message += f"{len(punitions)} punition(s)"
-            for punition in punitions:
-                date = punition["date"]
-                libelle = punition["libelle"]
-                motif = punition["motif"]
-                duree = punition["aFaire"]
-                message += f"- {libelle} le {date} pendant {duree} pour {motif}\n"
-
-            await contexte.send(message)
-
-        # Si identifiants changés
-        if login_data["code"] == 505:
-            logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-            await contexte.send("Identifiant et/ou mot de passe invalide!")
-    
-    # Si identifiants changés
-    else:
+    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
+    identifiants = credentials_fetch(contexte.author.id)
+    if not identifiants:
         await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
         logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}vie_scolaire sans être connecte")
+        return None
+    
+    username = identifiants[0]
+    password = identifiants[1]
+
+    # Vérifie la validité des identifiants et obtenir token et ID d'élève
+    await contexte.send(":hourglass: Veuillez patienter...")   
+    api_credentials = credentials_check(username, password)
+    if not api_credentials:
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
+        return None
+
+    # Obtenir les infos pour l'API
+    token = api_credentials["token"]
+    eleve_id = api_credentials["eleve_id"]
+    vie_scolaire_data = ecoledirecte.vie_scolaire(eleve_id, token).json()["data"]
+
+    # Contenu du message
+    message = ":school: **Vie scolaire**\n\n"
+
+    # Absences et retards
+    absences = []
+    retards = []
+    
+    # Tri absence/retard
+    for element in vie_scolaire_data["absencesRetards"]:
+        if element["typeElement"] == "Absence":
+            absences.append(element)
+        if element["typeElement"] == "Retard":
+            retards.append(element)
+
+    # Message des absences
+    message +=  ":ghost: **Absences**\n"
+    message += f"{len(absences)} absence(s)\n"
+    for absence in absences:
+        date = absence["displayDate"]
+        if absence["justifie"] == True:
+            justifiee = "Oui"
+        else:
+            justifiee = "Non"
+        message += f"- {date}. Justifiée ? **{justifiee}**\n"
+
+    message += "\n"
+    
+    # Message des retards
+    message += ":hourglass: **Retards**\n"
+    message += f"{len(retards)} retard(s)\n"
+    for retard in retards:
+        date = retard["displayDate"]
+        duree = retard["libelle"]
+        if retard["justifiee"]:
+            justifiee = "Oui"
+        else:
+            justifiee = "Non"
+        message += f"- {date} de {duree}. Justifiée ? **{justifiee}**\n"
+    
+    message += "\n"
+
+    # Encouragements/punitions
+
+    encouragements = []
+    punitions = []
+
+    for element in vie_scolaire_data["sanctionsEncouragements"]:
+        if element["typeElement"] == "Punition":
+            punitions.append(element)
+        else:
+            encouragements.append(element)
+
+    # Encouragements
+    message += ":thumbsup: **Encouragements**\n"
+    message += f"{len(encouragements)} encouragement(s)\n"
+    for encouragement in encouragements:
+        date = encouragement["date"]
+        motif = encouragement["motif"]
+        message += f"- Le {date} pour {motif}"
+
+    message += "\n"
+
+    # Punitions
+    message += ":boom: **Punitions**\n"
+    message += f"{len(punitions)} punition(s)"
+    for punition in punitions:
+        date = punition["date"]
+        libelle = punition["libelle"]
+        motif = punition["motif"]
+        duree = punition["aFaire"]
+        message += f"- {libelle} le {date} pendant {duree} pour {motif}\n"
+
+    await contexte.send(message)
+
 
 # Emploi du temps
 @bot.command()
