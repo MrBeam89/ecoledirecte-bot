@@ -403,56 +403,55 @@ async def edt(contexte, date):
         await contexte.send("Date invalide!")
         return None
 
-    user_info = db_handler.fetch_user_info(contexte.author.id)
-    if user_info:
-        await contexte.send(":hourglass: Veuillez patienter...")
-        
-        # Récuperer identifiants et données
-        username = aes.decrypt_aes(user_info[2], keygen.getkey())
-        password = aes.decrypt_aes(user_info[3], keygen.getkey())
-        login_data = ecoledirecte.login(username, password).json()
-
-        # Si identifiants corrects
-        if login_data["code"] == 200:
-            token = login_data["token"]
-            eleve_id = login_data["data"]["accounts"][0]["id"]
-
-            edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
-            edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
-            
-            # Contenu de l'embed
-            titre = f":calendar_spiral:  Emploi du temps du {date}"
-            message = ""
-            nb_de_cours = 0
-            for cours in edt_data:
-                if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
-                    heure_debut = cours["start_date"][-5:]
-                    heure_fin = cours["end_date"][-5:]
-                    salle = cours["salle"]
-                    nom = cours["text"]
-                    est_annule = cours["isAnnule"]
-                    if est_annule == True: # Si le cours est annulé
-                        message += f"~~**{heure_debut}-{heure_fin}** : {nom} en {salle}~~\n"
-                    else:
-                        message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
-                        nb_de_cours += 1
-            
-            
-            if nb_de_cours > 0:
-                embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-                await contexte.send(embed=embed)
-            else:
-                embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**", color=EMBED_COLOR)
-                await contexte.send(embed=embed)
-                
-        # Si identifiants changés
-        if login_data["code"] == 505:
-            await contexte.send("Identifiant et/ou mot de passe invalide!")
-        
-    # Si identifiants changés
-    else:
+    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
+    identifiants = credentials_fetch(contexte.author.id)
+    if not identifiants:
         await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}edt sans être connecte")
+        return None
+    
+    username = identifiants[0]
+    password = identifiants[1]
+
+    # Vérifie la validité des identifiants et obtenir token et ID d'élève
+    await contexte.send(":hourglass: Veuillez patienter...")   
+    api_credentials = credentials_check(username, password)
+    if not api_credentials:
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
+        return None
+
+    # Obtenir les infos pour l'API
+    token = api_credentials["token"]
+    eleve_id = api_credentials["eleve_id"]
+
+    edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
+    edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
+    
+    # Contenu de l'embed
+    titre = f":calendar_spiral:  Emploi du temps du {date}"
+    message = ""
+    nb_de_cours = 0
+    for cours in edt_data:
+        if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
+            heure_debut = cours["start_date"][-5:]
+            heure_fin = cours["end_date"][-5:]
+            salle = cours["salle"]
+            nom = cours["text"]
+            est_annule = cours["isAnnule"]
+            if est_annule == True: # Si le cours est annulé
+                message += f"~~**{heure_debut}-{heure_fin}** : {nom} en {salle}~~\n"
+            else:
+                message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
+                nb_de_cours += 1
+    
+    if nb_de_cours > 0:
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+    else:
+        embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**", color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+
+    logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}edt")
 
 # Notes (WIP)
 @bot.command()
