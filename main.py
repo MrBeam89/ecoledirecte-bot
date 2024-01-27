@@ -456,48 +456,48 @@ async def edt(contexte, date):
 # Notes (WIP)
 @bot.command()
 async def notes(contexte):
-    user_info = db_handler.fetch_user_info(contexte.author.id)
-    if user_info:
-        await contexte.send(":hourglass: Veuillez patienter...")
-        
-        # Récuperer identifiants et données
-        username = aes.decrypt_aes(user_info[2], keygen.getkey())
-        password = aes.decrypt_aes(user_info[3], keygen.getkey())
-        login_data = ecoledirecte.login(username, password).json()
-
-        # Si identifiants corrects
-        if login_data["code"] == 200:
-            token = login_data["token"]
-            eleve_id = login_data["data"]["accounts"][0]["id"]
-            notes_data = ecoledirecte.notes(eleve_id, token).json()["data"]
-            notes = notes_data["notes"]
-            
-            message_list = ["**:100: Notes (WIP)**\n"] # Pour scinder les messages trops longs en plusieurs morceaux (et titre)
-            for index in range(len(notes)):
-                note = notes[index]
-                libelle  = note["libelleMatiere"]
-                valeur = note["valeur"]
-                notesur = note["noteSur"]
-                devoir = note["devoir"]
-                text = f"{libelle} : {valeur}/{notesur} pour {devoir}\n"
-
-                # Contourner la limite de caractères
-                if len(message_list[-1] + text) >= 2000:
-                    message_list.append(text)
-                else:
-                    message_list[-1] += text
-
-            for message in message_list:
-                await contexte.send(message)
-
-        # Si identifiants changés
-        if login_data["code"] == 505:
-            await contexte.send("Identifiant et/ou mot de passe invalide!")
-        
-    # Si identifiants changés
-    else:
+    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
+    identifiants = credentials_fetch(contexte.author.id)
+    if not identifiants:
         await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
-        logging.info(f"Utilisateur {contexte.author.name} a essaye de {BOT_COMMAND_PREFIX}notes sans être connecte")
+        return None
+    
+    username = identifiants[0]
+    password = identifiants[1]
+
+    # Vérifie la validité des identifiants et obtenir token et ID d'élève
+    await contexte.send(":hourglass: Veuillez patienter...")   
+    api_credentials = credentials_check(username, password)
+    if not api_credentials:
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
+        return None
+
+    # Obtenir les infos pour l'API
+    token = api_credentials["token"]
+    eleve_id = api_credentials["eleve_id"]
+
+    notes_data = ecoledirecte.notes(eleve_id, token).json()["data"]
+    notes = notes_data["notes"]
+
+    # Contenu du message                
+    message_list = ["**:100: Notes (WIP)**\n"] # Pour scinder les messages trops longs en plusieurs morceaux (et titre)
+    for index in range(len(notes)):
+                    note = notes[index]
+                    libelle  = note["libelleMatiere"]
+                    valeur = note["valeur"]
+                    notesur = note["noteSur"]
+                    devoir = note["devoir"]
+                    text = f"{libelle} : {valeur}/{notesur} pour {devoir}\n"
+
+                    # Contourner la limite de caractères
+                    if len(message_list[-1] + text) >= 2000:
+                        message_list.append(text)
+                    else:
+                        message_list[-1] += text
+
+    for message in message_list:
+        await contexte.send(message)
 
 # Démarrer le bot
 with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
