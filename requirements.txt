@@ -1,0 +1,4 @@
+discord.py
+cryptography
+requests
+pyyaml

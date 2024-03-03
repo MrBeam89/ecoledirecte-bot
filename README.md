@@ -53,6 +53,8 @@ Vous aurez besoin des outils suivants :
 - Module `requests` : `pip3 install requests`
 - Module `yaml` : `pip3 install pyyaml`
 
+Vous pouvez aussi installer les modules en même temps en exécutant : `pip3 install -r requirements.txt`
+
 ### Installation
 
 1. Clonez ce dépôt avec `git clone https://github.com/MrBeam89/ecoledirecte-bot.git` ou téléchargez le ZIP.

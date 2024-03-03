@@ -9,3 +9,6 @@ __pycache__/
 logs/
 
 TODO.md
+
+# À ne pas ignorer
+!requirements.txt
