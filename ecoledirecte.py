@@ -38,7 +38,7 @@ urls = {
 header = {
             'authority': 'api.ecoledirecte.com',
             'accept': 'application/json, text/plain, */*',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+            'user-agent': 'EDMOBILE',
             'content-type': 'application/x-www-form-urlencoded',
             'sec-gpc': '1',
             'origin': 'https://www.ecoledirecte.com',
