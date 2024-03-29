@@ -383,7 +383,7 @@ async def vie_scolaire(contexte):
 
     # Punitions
     message += ":boom: **Punitions**\n"
-    message += f"{len(punitions)} punition(s)"
+    message += f"{len(punitions)} punition(s)\n"
     for punition in punitions:
         date = punition["date"]
         libelle = punition["libelle"]
