@@ -20,6 +20,7 @@ import logging
 import re
 import datetime
 import os
+import traceback
 
 import config
 import ecoledirecte
@@ -112,7 +113,7 @@ async def on_command_error(contexte, error):
         logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
     # Afficher message d'exception si en niveau DEBUG
     elif LOGGING_LEVEL == 10:
-        print(error)
+        print(traceback.print_exception(type(error), error, error.__traceback__))
 
 # Aide
 @bot.command()
