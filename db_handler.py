@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
     db_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     identifiant BLOB,
-    motdepasse BLOB
+    motdepasse BLOB,
+    cn BLOB,
+    cv BLOB
 );
 '''
 cursor.execute(create_table_sql)
@@ -40,12 +42,12 @@ connection.commit()
 connection.close()
 
 # Ajouter les informations d'un nouvel utilisateur
-def add_user_info(user_id:int, identifiant:str, motdepasse:str)->bool:
+def add_user_info(user_id:int, identifiant:str, motdepasse:str, cn:str, cv:str)->bool:
     connection = sqlite3.connect(f"{DB_FILENAME}")
     cursor = connection.cursor()
     try:
-        new_user = (cursor.lastrowid, user_id, identifiant, motdepasse)
-        cursor.execute("INSERT INTO users VALUES (?,?,?,?)", new_user)
+        new_user = (cursor.lastrowid, user_id, identifiant, motdepasse, cn, cv)
+        cursor.execute("INSERT INTO users VALUES (?,?,?,?,?,?)", new_user)
         connection.commit()
         connection.close()
         return True

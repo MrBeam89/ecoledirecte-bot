@@ -84,13 +84,15 @@ def credentials_fetch(id):
     if user_info:
         username = aes.decrypt_aes(user_info[2], keygen.getkey())
         password = aes.decrypt_aes(user_info[3], keygen.getkey())
-        return (username, password)
+        cn = aes.decrypt_aes(user_info[4], keygen.getkey())
+        cv = aes.decrypt_aes(user_info[5], keygen.getkey())
+        return (username, password, cn, cv)
     else:
         return ()
 
 # Vérifie la validité des identifiants et renvoie le token et l'ID d'élève
-def credentials_check(username, password):    
-    login_data = ecoledirecte.login(username, password).json()
+def credentials_check(username, password, cn, cv):    
+    login_data = ecoledirecte.login(username, password, cn, cv).json()
     
     # Si identifiants corrects
     if login_data['code'] == 200:
@@ -175,47 +177,119 @@ async def login(contexte, username, password):
     if db_handler.fetch_user_info(contexte.author.id):
         logging.info(f"Utilisateur {contexte.author.name} avec l'id {contexte.author.id} deja connecte")
         await contexte.send("Vous êtes déjà connecté!")
+        return
 
     # Si l'utilisateur n'est pas encore connecté
-    else:
+    await contexte.send(":hourglass: Veuillez patienter...")
+    logging.info(f"Tentative d'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+    reponse = ecoledirecte.login(username, password, '', '')
+    reponse_json = reponse.json()
+
+    # Si identifiants incorrects
+    if reponse_json['code'] == 505:
+        # Message de connexion ratée
+        titre = ':x:  **Connexion ratée!**'
+        message = "Identifiant et/ou mot de passe invalide!"
+
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+
+    # Si connexion initiale
+    if reponse_json['code'] == 250:
+        token = reponse_json['token']
+        
+        # Obtenir le quiz de vérification et les propositions de réponse
+        quiz_connexion_get_response = ecoledirecte.quiz_connexion_get(token).json()
+        question = b64.decode_base64(quiz_connexion_get_response['data']['question'])
+        propositions = quiz_connexion_get_response['data']['propositions']
+
+        # Embed du quiz
+        titre = "Veuillez répondre à la question suivante par le numéro à gauche de la réponse"
+        message = f"**{question}**\n"
+        for proposition_index in range(len(propositions)):
+            message += f"{proposition_index} : {b64.decode_base64(propositions[proposition_index])}\n"
+
+        # Envoyer le quiz
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+
+        # Vérifier que l'auteur de la réponse est le même que celui qui a essayé de se connecter
+        def check_message(message):
+            return message.author == contexte.message.author and contexte.message.channel == message.channel
+
+        # Obtenir la réponse de l'uilisateur (index de la réponse)
+        try:
+            reponse_numero = await bot.wait_for("message", timeout = 30, check = check_message)
+            index_reponse = int(reponse_numero.content)
+        except TimeoutError:
+            await contexte.send("Vous avez mis trop de temps à répondre. Annulation...")
+            return
+        except ValueError:
+            await contexte.send("Réponse invalide! Annulation...")
+            return
+
+        # Envoyer la proposition avec l'index donné par l'utilisateur
+        try:
+            cn_et_cv = ecoledirecte.quiz_connexion_post(propositions[index_reponse]).json()['data']
+        except IndexError:
+            await contexte.send("Numéro invalide! Annulation...")
+            return
+
+        # Si le quiz a été raté
+        if not cn_et_cv:
+            # Embed de quiz raté
+            titre = ':x:  **Quiz raté!**'
+            message = "Mauvaise réponse!"
+            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+
+            # Envoyer l'embed, ajouter au journal et quitter
+            await contexte.send(embed=embed)
+            logging.info(f"Quiz d'authentification raté par l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+            return
+
+        # Si le quiz a été réussi
+
+        # Embed de quiz réussi
+        titre = ':white_check_mark:  **Quiz réussi!**'
+        message = "Bonne réponse!"
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+
+        # Envoyer l'embed et l'ajouter au journal
+        await contexte.send(embed=embed)
+        logging.info(f"Quiz d'authentification réussi par l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        
+        cn = cn_et_cv['cn']
+        cv = cn_et_cv['cv']
+        
+        # Renvoyer une requêtre de connexion avec la double-authentification réussie
         await contexte.send(":hourglass: Veuillez patienter...")
-        logging.info(f"Tentative d'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-        reponse = ecoledirecte.login(username, password)
+        reponse = ecoledirecte.login(username, password, cn, cv)
         reponse_json = reponse.json()
 
-        # Si identifiants corrects
-        if reponse_json['code'] == 200:
-            # Ajout des identifiants chiffrés dans la base de données
-            encrypted_username = aes.encrypt_aes(username, keygen.getkey())
-            encrypted_password = aes.encrypt_aes(password, keygen.getkey())
-            logging.info(f"Ajout des informations de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-            db_handler.add_user_info(contexte.author.id, encrypted_username, encrypted_password)
+        # Ajout des identifiants chiffrés dans la base de données
+        encrypted_username = aes.encrypt_aes(username, keygen.getkey())
+        encrypted_password = aes.encrypt_aes(password, keygen.getkey())
+        encrypted_cn = aes.encrypt_aes(cn, keygen.getkey())
+        encrypted_cv = aes.encrypt_aes(cv, keygen.getkey())
 
-            # Message de connexion réussie
-            nom = reponse_json["data"]["accounts"][0]["nom"]
-            prenom = reponse_json["data"]["accounts"][0]["prenom"]
-            classe = reponse_json["data"]["accounts"][0]["profile"]["classe"]["code"]
+        logging.info(f"Ajout des informations de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        db_handler.add_user_info(contexte.author.id, encrypted_username, encrypted_password, encrypted_cn, encrypted_cv)
 
-            titre = ":white_check_mark:  **Connexion réussie!**"
-            message = "Connecté(e) en tant que :\n"
-            message += f"**Nom** : {nom}\n**Prénom** : {prenom}\n**Classe** : {classe}"
+        # Message de connexion réussie
+        nom = reponse_json["data"]["accounts"][0]["nom"]
+        prenom = reponse_json["data"]["accounts"][0]["prenom"]
+        classe = reponse_json["data"]["accounts"][0]["profile"]["classe"]["code"]
 
-            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-            await contexte.send(embed=embed)
-                
-            logging.info(f"Authentification reussie de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id} avec le compte de {nom} {prenom} {classe}")
+        titre = ":white_check_mark:  **Connexion réussie!**"
+        message = "Connecté(e) en tant que :\n"
+        message += f"**Nom** : {nom}\n**Prénom** : {prenom}\n**Classe** : {classe}"
 
-        # Si identifiants incorrects
-        if reponse_json['code'] == 505:
-            # Message de connexion ratée
-            titre = ':x:  **Connexion ratée!**'
-            message = "Identifiant et/ou mot de passe invalide!"
-
-            embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-            await contexte.send(embed=embed)
-
-            logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+            
+        logging.info(f"Authentification reussie de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id} avec le compte de {nom} {prenom} {classe}")
 
 # Erreurs de !login
 @login.error
@@ -242,7 +316,7 @@ async def logout(contexte):
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def cdt(contexte, date):
-    # Vérifie si la date est valide
+    # Vérifie si la date est valide!e
     if not date_valide(date):
         await contexte.send("Date invalide!")
         return None
@@ -255,10 +329,12 @@ async def cdt(contexte, date):
     
     username = identifiants[0]
     password = identifiants[1]
+    cn = identifiants[2]
+    cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
     await contexte.send(":hourglass: Veuillez patienter...")   
-    api_credentials = credentials_check(username, password)
+    api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
@@ -305,10 +381,12 @@ async def vie_scolaire(contexte):
     
     username = identifiants[0]
     password = identifiants[1]
+    cn = identifiants[2]
+    cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
     await contexte.send(":hourglass: Veuillez patienter...")   
-    api_credentials = credentials_check(username, password)
+    api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
@@ -411,10 +489,12 @@ async def edt(contexte, date):
     
     username = identifiants[0]
     password = identifiants[1]
+    cn = identifiants[2]
+    cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
     await contexte.send(":hourglass: Veuillez patienter...")   
-    api_credentials = credentials_check(username, password)
+    api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
@@ -464,10 +544,12 @@ async def notes(contexte):
     
     username = identifiants[0]
     password = identifiants[1]
+    cn = identifiants[2]
+    cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
     await contexte.send(":hourglass: Veuillez patienter...")   
-    api_credentials = credentials_check(username, password)
+    api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")

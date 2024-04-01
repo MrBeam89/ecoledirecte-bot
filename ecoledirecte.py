@@ -20,6 +20,8 @@ import requests
 # URLs pour les requêtes
 urls = {
             "LOGIN_URL": "https://api.ecoledirecte.com/v3/login.awp?v=4.44.0",
+            "QUIZ_CONNEXION_GET_URL": "https://api.ecoledirecte.com/v3/connexion/doubleauth.awp?verbe=get&v=4.53.4",
+            "QUIZ_CONNEXION_POST_URL": "https://api.ecoledirecte.com/v3/connexion/doubleauth.awp?verbe=post&v=4.53.4",
             "TIMELINE_URL": f"https://api.ecoledirecte.com/v3/eleves/{{eleve_id}}/timeline.awp?verbe=get&v=4.44.1",
             "EMPLOI_DU_TEMPS_URL": f"https://api.ecoledirecte.com/v3/E/{{eleve_id}}/emploidutemps.awp?v=4.46.3&verbe=get",
             "CAHIER_DE_TEXTE_URL": f"https://api.ecoledirecte.com/v3/Eleves/{{eleve_id}}/cahierdetexte/{{date}}.awp?verbe=get&v=4.44.1",
@@ -38,7 +40,7 @@ urls = {
 header = {
             'authority': 'api.ecoledirecte.com',
             'accept': 'application/json, text/plain, */*',
-            'user-agent': 'EDMOBILE',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
             'content-type': 'application/x-www-form-urlencoded',
             'sec-gpc': '1',
             'origin': 'https://www.ecoledirecte.com',
@@ -49,21 +51,50 @@ header = {
             'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7'
         }
 
-def login(identifiant, motdepasse):
+def login(identifiant, motdepasse, cn, cv):
     '''
     login : connexion avec identifiants EcoleDirecte
     Arguments:
     identifiant: votre identifiant EcoleDirecte
     motdepasse: votre mot de passe EcoleDirecte
+    cn : Utilisé pour double-authentification
+    cv : Utilisé pour double-authentification
     Renvoie (si connexion réussie):
     login_reponse : réponse d'EcoleDirecte pour la connexion
     '''
 
     url = urls["LOGIN_URL"]
-    login_request = f'data={{"uuid": "", "identifiant": "{identifiant}", "isRelogin": false, "motdepasse": "{motdepasse}"}}'
+    login_request = f'data={{"uuid": "", "identifiant": "{identifiant}", "isRelogin": false, "motdepasse": "{motdepasse}", "fa": [{{"cn": "{cn}", "cv": "{cv}"}}]}}'
     login_response = requests.post(url=url, data=login_request, headers=header)
     
     return login_response
+
+def quiz_connexion_get(token):
+    '''
+    quiz_connexion_get : Obtenir le QCM donné lors d'une connexion à partir d'un nouvel appareil
+    Arguments :
+    token : Token
+    '''
+
+    url = urls["QUIZ_CONNEXION_GET_URL"]
+    quiz_connexion_get_request = 'data={}'
+    header["x-token"] = token
+    qcm_connexion_get_response = requests.post(url=url, data=quiz_connexion_get_request, headers=header)
+
+    return qcm_connexion_get_response
+
+def quiz_connexion_post(proposition):
+    '''
+    quiz_connexion_post : Renvoyer la réponse du QCM donné lors d'une connexion à partir d'un nouvel appareil
+    Arguments :
+    proposition : Proposition du QCM
+    '''
+
+    url = urls["QUIZ_CONNEXION_POST_URL"]
+    quiz_connexion_post_request = f'data={{"choix": "{proposition}"}}'
+    quiz_connexion_post_response = requests.post(url=url, data=quiz_connexion_post_request, headers=header)
+
+    return quiz_connexion_post_response
 
 def timeline(eleve_id, token):
     '''
