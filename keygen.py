@@ -17,22 +17,22 @@
 import yaml
 from secrets import token_bytes
 
-from config import CONFIG_FILENAME
+from config import CONFIG_FILENAME, ECOLEDIRECTE_DIR
 
 def getkey()->bytes:
     # Obtenir le nom du fichier de la clé dans la config
     DB_KEY_FILENAME = None
-    with open(f"{CONFIG_FILENAME}", "r") as config_file:
+    with open(f"{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}", "r") as config_file:
         config = yaml.safe_load(config_file)
         DB_KEY_FILENAME = config["DB_KEY_FILENAME"]
 
     # Création/récupération de la clé
     try:
         # Ne modifie pas la clé si elle existe déjà
-        keyfile = open(f"{DB_KEY_FILENAME}", "rb")
+        keyfile = open(f"{ECOLEDIRECTE_DIR}{DB_KEY_FILENAME}", "rb")
     except FileNotFoundError:
         # Si la clé n'existe pas
-        keyfile = open(f"{DB_KEY_FILENAME}", "wb+")
+        keyfile = open(f"{ECOLEDIRECTE_DIR}{DB_KEY_FILENAME}", "wb+")
         keyfile.write(token_bytes(32))
         keyfile.seek(0)
     finally:

@@ -16,16 +16,18 @@
 
 import sqlite3
 import yaml
-
-from config import CONFIG_FILENAME
+from config import CONFIG_FILENAME, ECOLEDIRECTE_DIR
+from os.path import basename
 
 # Obtenir le nom de la base de données
-config_file = open(f"{CONFIG_FILENAME}", "r")
+config_file = open(f"{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}", "r")
 config = yaml.safe_load(config_file)
+
 DB_FILENAME = config["DB_FILENAME"]
+DB_ABSOLUTE_PATH = f"{ECOLEDIRECTE_DIR}{DB_FILENAME}"
 
 # Créer la base de données et ajouter la table si elle n'existe pas
-connection = sqlite3.connect(f"{DB_FILENAME}")
+connection = sqlite3.connect(f"{DB_ABSOLUTE_PATH}")
 cursor = connection.cursor()
 create_table_sql = '''
 CREATE TABLE IF NOT EXISTS users (
@@ -43,7 +45,7 @@ connection.close()
 
 # Ajouter les informations d'un nouvel utilisateur
 def add_user_info(user_id:int, identifiant:str, motdepasse:str, cn:str, cv:str)->bool:
-    connection = sqlite3.connect(f"{DB_FILENAME}")
+    connection = sqlite3.connect(f"{DB_ABSOLUTE_PATH}")
     cursor = connection.cursor()
     try:
         new_user = (cursor.lastrowid, user_id, identifiant, motdepasse, cn, cv)
@@ -58,7 +60,7 @@ def add_user_info(user_id:int, identifiant:str, motdepasse:str, cn:str, cv:str)-
 
 # Obtenir les informations d'un utilisateur
 def fetch_user_info(user_id:int):
-    connection = sqlite3.connect(f"{DB_FILENAME}")
+    connection = sqlite3.connect(f"{DB_ABSOLUTE_PATH}")
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
     user_data = cursor.fetchone()
@@ -72,7 +74,7 @@ def fetch_user_info(user_id:int):
 # Supprimer l'utilisateur
 def delete_user(user_id:int)->bool:
     if fetch_user_info(user_id):
-        connection = sqlite3.connect(f"{DB_FILENAME}")
+        connection = sqlite3.connect(f"{DB_ABSOLUTE_PATH}")
         cursor = connection.cursor()
         cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
         connection.commit()

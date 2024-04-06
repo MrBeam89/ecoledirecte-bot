@@ -30,7 +30,7 @@ import db_handler
 import b64
 import str_clean
 
-print(f"{'-'*30}\nEcoleDirecte Bot par MrBeam89_\n{'-'*30}")
+print(f"{'-'*40}\nEcoleDirecte Bot (v0.9.0b) par MrBeam89_\n{'-'*40}")
 
 # Récupération de la configuration
 BOT_CONFIG = config.get_config()
@@ -45,15 +45,14 @@ EMBED_COLOR = BOT_CONFIG["EMBED_COLOR"]
 # Journalisation
 year, month, day, hour, minute, second = datetime.datetime.now().timetuple()[:6]
 log_filename = f"log_{year}-{month}-{day}_{hour}-{minute}-{second}.log" # Format du nom de fichier
-log_directory_name = "logs"
-log_directory_path = os.path.join(os.getcwd(), log_directory_name)
+log_directory_path = os.path.join(config.ECOLEDIRECTE_DIR, "logs")
 
 if not os.path.exists(log_directory_path):
-    print(f'Création du répertoire "{log_directory_name}"...')
+    print(f'Création du répertoire "{log_directory_path}"...')
     os.mkdir(log_directory_path)
-    print(f'Répertoire "{log_directory_name}" créé!')
+    print(f'Répertoire "{log_directory_path}" créé!')
 else:
-    print(f'Répertoire "{log_directory_name}" existe déjà!')
+    print(f'Répertoire "{log_directory_path}" existe déjà!')
 
 log_path = os.path.join(log_directory_path, log_filename)
 
@@ -583,6 +582,7 @@ async def notes(contexte):
         await contexte.send(message)
 
 # Démarrer le bot
+BOT_TOKEN_FILENAME = __file__.rstrip(os.path.basename(__file__)) + BOT_TOKEN_FILENAME
 with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
     bot_token = BOT_TOKEN_FILE.read()
 
