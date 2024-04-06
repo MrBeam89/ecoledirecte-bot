@@ -2,17 +2,17 @@
 #    Copyright (C) 2023-2024 MrBeam89_
 #
 #    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+#    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import discord
 from discord.ext import commands
@@ -159,11 +159,11 @@ async def remerciements(contexte):
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def license(contexte):
     titre = "📜  **Informations de Licence du Bot**"
-    message = '''Ce bot est distribué sous la Licence Publique Générale GNU version 3.0 (GPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+    message = '''Ce bot est distribué sous la Licence Publique Affero Générale GNU version 3.0 (AGPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
 
-**Texte Complet de la Licence :** [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html#license-text)
+**Texte Complet de la Licence :** [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.html#license-text)
 
-Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/gpl-faq.fr.html).'''
+Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
     
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
 

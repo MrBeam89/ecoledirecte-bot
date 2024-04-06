@@ -130,4 +130,4 @@ Merci à eux !
 
 <h2 id="licence">Licence</h2>
 
-Ce bot est distribué sous la **Licence Publique Générale GNU version 3.0 (GPLv3)**. Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+Ce bot est distribué sous la **Licence Publique Affero Générale GNU version 3.0 (GPLv3)**. Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
