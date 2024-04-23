@@ -601,4 +601,5 @@ with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
 try:
     bot.run(bot_token)
 except discord.errors.LoginFailure:
-    logging.error("Token invalide")
+    print("Token invalide!")
+    logging.error("Token invalide!")
