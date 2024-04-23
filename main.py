@@ -70,7 +70,7 @@ logging.basicConfig(level=LOGGING_LEVEL, filename=log_path, filemode="w",
 async def on_ready():
     zip_source.delete_zip_source(ZIP_SOURCE_CODE_FILENAME)
     print("Bot prêt!")
-    await bot.change_presence(activity=discord.CustomActivity(name='Tapez !aide pour voir les commandes disponibles' ))
+    await bot.change_presence(activity=discord.CustomActivity(name=f'Tapez {BOT_COMMAND_PREFIX}aide pour voir les commandes disponibles' ))
 
 
 # Erreures générales
