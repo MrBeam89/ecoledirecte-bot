@@ -611,7 +611,7 @@ with open(f"{BOT_TOKEN_FILENAME}") as BOT_TOKEN_FILE:
     bot_token = BOT_TOKEN_FILE.read()
 
 try:
-    bot.run(bot_token)
+    bot.run(bot_token, log_level=LOGGING_LEVEL)
 except discord.errors.LoginFailure:
     print("Token invalide!")
     logging.error("Token invalide!")

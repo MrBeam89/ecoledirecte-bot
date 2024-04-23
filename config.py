@@ -24,10 +24,9 @@ CONFIG_FILENAME = f"config.yaml"
 def get_config():
     # Vérification fichier de configuration
     try:
-        print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}"...')
         with open(f"{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}", "r") as config_file:
             config = yaml.safe_load(config_file)
-            print(f'Ouverture de "{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}" réussie!')
+            print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{CONFIG_FILENAME}" réussie!')
             BOT_TOKEN_FILENAME = config["BOT_TOKEN_FILENAME"]
             DB_KEY_FILENAME = config['DB_KEY_FILENAME']
             DB_FILENAME = config["DB_FILENAME"]
@@ -46,7 +45,6 @@ def get_config():
 
     # Vérification du fichier de token
     try:
-        print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{BOT_TOKEN_FILENAME}"...')
         token_file = open(f"{ECOLEDIRECTE_DIR}{BOT_TOKEN_FILENAME}", "r")
         print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{BOT_TOKEN_FILENAME}" réussie!')
         token_file.close()
@@ -57,7 +55,6 @@ def get_config():
 
     # Vérification du fichier de clé pour la base de données
     try:
-        print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{DB_KEY_FILENAME}"...')
         db_key_file = open(f"{ECOLEDIRECTE_DIR}{DB_KEY_FILENAME}", "r")
         print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{DB_KEY_FILENAME}", réussie!')
         db_key_file.close()
@@ -71,7 +68,6 @@ def get_config():
 
     # Vérification du fichier de la base de données
     try:
-        print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{DB_FILENAME}"...')
         db_key_file = open(f"{ECOLEDIRECTE_DIR}{DB_FILENAME}", "r")
         print(f'Ouverture du fichier "{ECOLEDIRECTE_DIR}{DB_FILENAME}" réussie!')
         db_key_file.close()
