@@ -70,6 +70,7 @@ logging.basicConfig(level=LOGGING_LEVEL, filename=log_path, filemode="w",
 async def on_ready():
     zip_source.delete_zip_source(ZIP_SOURCE_CODE_FILENAME)
     print("Bot prêt!")
+    await bot.change_presence(activity=discord.CustomActivity(name='Tapez !aide pour voir les commandes disponibles' ))
 
 
 # Erreures générales
@@ -593,6 +594,7 @@ async def license(contexte):
 Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
     
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+    embed.set_thumbnail(url="https://www.gnu.org/graphics/agplv3-with-text-162x68.png")
     await contexte.send(embed=embed)
 
 
