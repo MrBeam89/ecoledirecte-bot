@@ -62,10 +62,23 @@ print(f'Création du fichier de journalisation dans "{log_path}".')
 logging.basicConfig(level=LOGGING_LEVEL, filename=log_path, filemode="w",
                     format="%(asctime)s [%(levelname)s] %(message)s")
 
+
 # Au démarrage du bot
 @bot.event
 async def on_ready():
     print("Bot prêt!")
+
+
+# Erreures générales
+@bot.event
+async def on_command_error(contexte, error):
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        await contexte.send(f"Commande invalide! Utilisez **{BOT_COMMAND_PREFIX}aide** pour afficher la liste des commandes disponibles")
+        logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+    # Afficher message d'exception si en niveau DEBUG
+    elif LOGGING_LEVEL == 10:
+        print(traceback.print_exception(type(error), error, error.__traceback__))
+
 
 # Vérifie si la date est valide
 def date_valide(input_string):
@@ -78,6 +91,7 @@ def date_valide(input_string):
             return True
     return False
 
+
 # Vérifie si les données de l'utilisateur existent dans la base de données
 def credentials_fetch(id):
     user_info = db_handler.fetch_user_info(id)
@@ -89,6 +103,7 @@ def credentials_fetch(id):
         return (username, password, cn, cv)
     else:
         return ()
+
 
 # Vérifie la validité des identifiants et renvoie le token et l'ID d'élève
 def credentials_check(username, password, cn, cv):    
@@ -104,15 +119,6 @@ def credentials_check(username, password, cn, cv):
     if login_data['code'] == 505:
         return ()
 
-# Erreures générales
-@bot.event
-async def on_command_error(contexte, error):
-    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-        await contexte.send(f"Commande invalide! Utilisez **{BOT_COMMAND_PREFIX}aide** pour afficher la liste des commandes disponibles")
-        logging.info(f"Commande invalide de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-    # Afficher message d'exception si en niveau DEBUG
-    elif LOGGING_LEVEL == 10:
-        print(traceback.print_exception(type(error), error, error.__traceback__))
 
 # Aide
 @bot.command()
@@ -139,35 +145,6 @@ Commandes disponibles :
 
     await contexte.send(embed=embed)
 
-# Remerciements
-@bot.command()
-@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
-async def remerciements(contexte):
-    titre = ":clap:  **Remerciements**"
-    message = '''Merci à...
-**L'équipe derrière la [documentation (non-officielle mais excellente) de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !
-**Aleocraft (@aleocraft)** : Premier Bêta-testeur !
-**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)
-**:index_pointing_at_the_viewer: Vous** : Si vous utilisez ce bot ou si vous contribuez!'''
-    
-    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-
-    await contexte.send(embed=embed)
-
-# Licence
-@bot.command()
-@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
-async def license(contexte):
-    titre = "📜  **Informations de Licence du Bot**"
-    message = '''Ce bot est distribué sous la Licence Publique Affero Générale GNU version 3.0 (AGPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
-
-**Texte Complet de la Licence :** [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.html#license-text)
-
-Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
-    
-    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-
-    await contexte.send(embed=embed)
 
 # Connexion
 @bot.command()
@@ -291,13 +268,13 @@ async def login(contexte, username, password):
             
         logging.info(f"Authentification reussie de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id} avec le compte de {nom} {prenom} {classe}")
 
+
 # Erreurs de !login
 @login.error
 async def login_error(contexte, error):
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         logging.info(f"Syntaxe de {BOT_COMMAND_PREFIX}login invalide par l'utilisateur {contexte.author.name}")
         await contexte.send(f"Syntaxe invalide! : Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
-
 
 
 # Déconnexion
@@ -367,7 +344,70 @@ async def cdt(contexte, date):
     await contexte.send(embed=embed)
 
     logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}cdt")
-        
+
+     
+# Emploi du temps
+@bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
+async def edt(contexte, date):
+    # Vérifie si la date est valide
+    if not date_valide(date):
+        await contexte.send("Date invalide!")
+        return None
+
+    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
+    identifiants = credentials_fetch(contexte.author.id)
+    if not identifiants:
+        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
+        return None
+    
+    username = identifiants[0]
+    password = identifiants[1]
+    cn = identifiants[2]
+    cv = identifiants[3]
+
+    # Vérifie la validité des identifiants et obtenir token et ID d'élève
+    await contexte.send(":hourglass: Veuillez patienter...")   
+    api_credentials = credentials_check(username, password, cn, cv)
+    if not api_credentials:
+        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
+        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
+        return None
+
+    # Obtenir les infos pour l'API
+    token = api_credentials["token"]
+    eleve_id = api_credentials["eleve_id"]
+
+    edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
+    edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
+    
+    # Contenu de l'embed
+    titre = f":calendar_spiral:  Emploi du temps du {date}"
+    message = ""
+    nb_de_cours = 0
+    for cours in edt_data:
+        if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
+            heure_debut = cours["start_date"][-5:]
+            heure_fin = cours["end_date"][-5:]
+            salle = cours["salle"]
+            nom = cours["text"]
+            est_annule = cours["isAnnule"]
+            if est_annule == True: # Si le cours est annulé
+                message += f"~~**{heure_debut}-{heure_fin}** : {nom} en {salle}~~\n"
+            else:
+                message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
+                nb_de_cours += 1
+    
+    if nb_de_cours > 0:
+        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+    else:
+        embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**", color=EMBED_COLOR)
+        await contexte.send(embed=embed)
+
+    logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}edt")
+
+
 # Vie scolaire
 @bot.command()
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
@@ -472,67 +512,6 @@ async def vie_scolaire(contexte):
     await contexte.send(message)
 
 
-# Emploi du temps
-@bot.command()
-@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
-async def edt(contexte, date):
-    # Vérifie si la date est valide
-    if not date_valide(date):
-        await contexte.send("Date invalide!")
-        return None
-
-    # Vérifie si les identifiants de l'utilisateur sont dans la base de données et les récupère
-    identifiants = credentials_fetch(contexte.author.id)
-    if not identifiants:
-        await contexte.send(f"Vous n'êtes pas connecté! Utilisez {BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>")
-        return None
-    
-    username = identifiants[0]
-    password = identifiants[1]
-    cn = identifiants[2]
-    cv = identifiants[3]
-
-    # Vérifie la validité des identifiants et obtenir token et ID d'élève
-    await contexte.send(":hourglass: Veuillez patienter...")   
-    api_credentials = credentials_check(username, password, cn, cv)
-    if not api_credentials:
-        logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
-        await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
-        return None
-
-    # Obtenir les infos pour l'API
-    token = api_credentials["token"]
-    eleve_id = api_credentials["eleve_id"]
-
-    edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
-    edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
-    
-    # Contenu de l'embed
-    titre = f":calendar_spiral:  Emploi du temps du {date}"
-    message = ""
-    nb_de_cours = 0
-    for cours in edt_data:
-        if cours["matiere"].strip() : # Si cours n'est pas vide/permanence/congés
-            heure_debut = cours["start_date"][-5:]
-            heure_fin = cours["end_date"][-5:]
-            salle = cours["salle"]
-            nom = cours["text"]
-            est_annule = cours["isAnnule"]
-            if est_annule == True: # Si le cours est annulé
-                message += f"~~**{heure_debut}-{heure_fin}** : {nom} en {salle}~~\n"
-            else:
-                message += f"**{heure_debut}-{heure_fin}** : {nom} en {salle}\n"
-                nb_de_cours += 1
-    
-    if nb_de_cours > 0:
-        embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-        await contexte.send(embed=embed)
-    else:
-        embed = discord.Embed(title=titre, description="**:tada: Pas de cours ce jour-là !**", color=EMBED_COLOR)
-        await contexte.send(embed=embed)
-
-    logging.info(f"Utilisateur {contexte.author.name} a utilisé {BOT_COMMAND_PREFIX}edt")
-
 # Notes (WIP)
 @bot.command()
 async def notes(contexte):
@@ -580,6 +559,39 @@ async def notes(contexte):
 
     for message in message_list:
         await contexte.send(message)
+
+
+# Remerciements
+@bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
+async def remerciements(contexte):
+    titre = ":clap:  **Remerciements**"
+    message = '''Merci à...
+**L'équipe derrière la [documentation (non-officielle mais excellente) de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !
+**Aleocraft (@aleocraft)** : Premier Bêta-testeur !
+**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)
+**:index_pointing_at_the_viewer: Vous** : Si vous utilisez ce bot ou si vous contribuez!'''
+    
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+
+    await contexte.send(embed=embed)
+
+
+# Licence
+@bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
+async def license(contexte):
+    titre = "📜  **Informations de Licence du Bot**"
+    message = '''Ce bot est distribué sous la Licence Publique Affero Générale GNU version 3.0 (AGPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
+
+**Texte Complet de la Licence :** [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.html#license-text)
+
+Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
+    
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+
+    await contexte.send(embed=embed)
+
 
 # Démarrer le bot
 BOT_TOKEN_FILENAME = __file__.rstrip(os.path.basename(__file__)) + BOT_TOKEN_FILENAME
