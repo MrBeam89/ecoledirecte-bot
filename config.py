@@ -35,6 +35,7 @@ def get_config():
             LOGGING_LEVEL = config["LOGGING_LEVEL"]
             COOLDOWN = config["COOLDOWN"]
             EMBED_COLOR = config["EMBED_COLOR"]
+            ZIP_SOURCE_CODE_FILENAME = config["ZIP_SOURCE_CODE_FILENAME"]
 
             config_file.close()
 
@@ -126,6 +127,14 @@ def get_config():
                 print("Couleur de l'embed invalide!")
                 input("Appuyez sur Entree pour quitter...")
                 exit()
+
+    # Vérification du nom de fichier du ZIP du code source
+    if not isinstance(ZIP_SOURCE_CODE_FILENAME, str):
+        print("Nom du fichier du ZIP du code source invalide!")
+        input("Appuyez sur Entree pour quitter...")
+        exit()
+    else:
+        print("Nom du fichier du ZIP du code source valide!")
 
     # Renvoie la configuration
     print("Configuration valide!")

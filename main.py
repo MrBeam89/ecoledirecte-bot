@@ -29,6 +29,7 @@ import keygen
 import db_handler
 import b64
 import str_clean
+import zip_source
 
 print(f"{'-'*40}\nEcoleDirecte Bot (v0.9.0b) par MrBeam89_\n{'-'*40}")
 
@@ -41,6 +42,7 @@ BOT_COMMAND_PREFIX = BOT_CONFIG["BOT_COMMAND_PREFIX"]
 LOGGING_LEVEL = BOT_CONFIG["LOGGING_LEVEL"]
 COOLDOWN = BOT_CONFIG["COOLDOWN"]
 EMBED_COLOR = BOT_CONFIG["EMBED_COLOR"]
+ZIP_SOURCE_CODE_FILENAME = BOT_CONFIG["ZIP_SOURCE_CODE_FILENAME"]
 
 # Journalisation
 year, month, day, hour, minute, second = datetime.datetime.now().timetuple()[:6]
@@ -66,6 +68,7 @@ logging.basicConfig(level=LOGGING_LEVEL, filename=log_path, filemode="w",
 # Au démarrage du bot
 @bot.event
 async def on_ready():
+    zip_source.delete_zip_source(ZIP_SOURCE_CODE_FILENAME)
     print("Bot prêt!")
 
 
@@ -135,7 +138,8 @@ Commandes disponibles :
 **{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes
 **{BOT_COMMAND_PREFIX}aide** : Ce message
 **{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
-**{BOT_COMMAND_PREFIX}license** : Informations de licence'''
+**{BOT_COMMAND_PREFIX}license** : Informations de licence
+**{BOT_COMMAND_PREFIX}code_source** : Code source du bot (compressé dans un fichier ZIP)'''
     footer = "Envoyez-moi un MP en cas de souci!"
     github_repo_url = "https://github.com/MrBeam89/ecoledirecte-bot"
 
@@ -589,9 +593,15 @@ async def license(contexte):
 Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
     
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
-
     await contexte.send(embed=embed)
 
+
+# Envoyer code source
+@bot.command()
+@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
+async def code_source(contexte):
+    zip_filepath = zip_source.create_zip_source(ZIP_SOURCE_CODE_FILENAME)
+    await contexte.send(file=discord.File(zip_filepath))
 
 # Démarrer le bot
 BOT_TOKEN_FILENAME = __file__.rstrip(os.path.basename(__file__)) + BOT_TOKEN_FILENAME

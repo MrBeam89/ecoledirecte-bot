@@ -4,6 +4,7 @@ BOT_TOKEN_FILENAME : token.txt
 DB_KEY_FILENAME : keyfile.bin
 DB_FILENAME : db.sqlite3
 BOT_COMMAND_PREFIX : "!"
-LOGGING_LEVEL : 20 # 10 pour DEBUG, 20 pour INFO
+LOGGING_LEVEL : 10 # 10 pour DEBUG, 20 pour INFO
 COOLDOWN : 5
 EMBED_COLOR: 0x0000ff # En RVB, au format 0xRRVVBB
+ZIP_SOURCE_CODE_FILENAME: ed_bot_source_code.zip

@@ -23,16 +23,27 @@ from config import ECOLEDIRECTE_DIR
 
 TEMP_DIR = tempfile.gettempdir() # Chemin d'accès du répertoire temporaire pour stocker l'archive
 
-# Obtenir les noms de fichiers dans le dossier du bot (ignorer les autres répertoires)
-filenames = []
-for filename in os.listdir(ECOLEDIRECTE_DIR):
-    if os.path.isfile(filename):
-        filenames.append(filename)
+# Obtenir les noms de fichiers dans le dossier ECOLEDIRECTE_DIR
+filenames = os.listdir(ECOLEDIRECTE_DIR)
+
+# Obtenir les chemins absolus des fichiers dans le dossier ECOLEDIRECTE_DIR
+abs_filepaths = [os.path.join(ECOLEDIRECTE_DIR, filename) for filename in filenames]
 
 # Obtenir les chemins d'accès à ignorer
-repo = git.repo.base.Repo(ECOLEDIRECTE_DIR)
-ignored_paths = repo.ignored(filenames)
+repo = git.Repo(ECOLEDIRECTE_DIR)
+ignored_paths = repo.git.check_ignore(abs_filepaths)
 
+
+# Supprimer l'archive ZIP du code source
+def delete_zip_source(zip_filename):
+    if os.path.exists(zip_filename):
+        try:
+            os.remove(zip_filename)
+        except:
+            print(f'Erreur lors de la supression du fichier {zip_filename}')
+
+
+# Créer l'archive ZIP du code source
 def create_zip_source(zip_filename):
     # Stocker l'archive ZIP dans le répertoire temporaire
     zfile_filepath = os.path.join(TEMP_DIR, zip_filename)
@@ -45,13 +56,15 @@ def create_zip_source(zip_filename):
     zfile =  zipfile.ZipFile(zfile_filepath, 'w', zipfile.ZIP_DEFLATED)
 
     # Pour chaque fichier dans le répertoire du bot
-    for filename in filenames:
+    for i in range(len(filenames)):
+        filename = filenames[i]
+        abs_filepath = abs_filepaths[i]
+
         # Si le fichier est à ignorer, passer le reste de la boucle
         if filename in ignored_paths: continue
 
         # Ajouter le fichier à l'archive
-        filepath = os.path.join(ECOLEDIRECTE_DIR, filename)
-        zfile.write(filepath, filename)
+        zfile.write(abs_filepath, filename)
 
     # Renvoyer le chemin d'accès de l'archive pour utilisation ultérieure
     return zfile_filepath
