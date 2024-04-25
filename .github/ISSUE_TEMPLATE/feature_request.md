@@ -1,20 +1,25 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+name: Suggestion d'améliorations/fonctionnalitées
+description: Suggérer des idées pour améliorer ce projet
+labels: enhancement
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+> [!WARNING]
+> S'il s'agit d'une amélioration concernant un bug, veuillez plutôt créer un rapport de bug
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Votre demande de amélioration/fonctionnalitée est-elle liée à un problème ? Veuillez décrire.**
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+Une description claire et concise du problème. Par exemple : Je suis toujours frustré(e) lorsque [...]
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Décrivez la solution que vous aimeriez**
+
+Une description claire et concise de ce que vous souhaitez voir se produire.
+
+**Décrivez les alternatives que vous avez envisagées**
+
+Une description claire et concise de toutes les solutions ou fonctionnalités alternatives que vous avez envisagées.
+
+**Détails supplémentaires**
+
+Ajoutez tout autre contexte ou capture d'écran concernant la demande de fonctionnalité ici.
