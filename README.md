@@ -83,41 +83,9 @@ Sur Discord, tapez la commande `!aide`, si tout est bien configuré, le bot devr
 
 Vous pouvez changer facilement les paramètres du bot en modifiant le fichier `config.yaml`.
 
-**⚠️ AVERTISSEMENT ⚠️ : Si vous contribuez, il est recommandé de garder les extensions de fichier par défaut dans le fichier de configuration pour éviter tout upload de fichiers sensibles.**
-
 <h2 id="contribuer">Contribuer</h2>
 
-Bien que les fonctionnalités ont chacune une priorité, vous pouvez quand même ajouter celles avec une priorité plus basse malgré d'autres qui ont une priorité plus importante.
-
-Pour celles qui n'ont pas été encore implémentées dans `ecoledirecte.py`, veuillez utiliser la documentation de l'API située [ici](https://github.com/EduWireApps/ecoledirecte-api-docs). 
-
-**Priorité : Haute**
-
-- [X] Connexion
-- [X] Cahier de texte
-- [X] Emploi du temps
-- [X] Notes (WIP)
-- [X] Vie scolaire
-- [X] Fichier de configuration
-
-**Priorité : Moyenne**
-
-- [ ] Timeline commune
-- [ ] Timeline
-- [ ] Documents administratifs
-- [ ] Leaderboard des notes
-- [ ] MP lors d'une nouvelle note/nouveaux devoirs/observations
-
-**Priorité : Basse**
-
-- [ ] QCMs
-- [ ] Manuels numériques
-- [ ] Vie de la classe
-- [ ] Formulaires
-- [ ] Espaces de travail (non-implémentée)
-- [ ] Cloud (non-implémentée)
-- [ ] Téléchargement (non-implémentée)
-- [ ] Messagerie (non-implémentée)
+Veuillez regarder [CONTRIBUTING.md](CONTRIBUTING.md).
 
 <h2 id="remerciements">Remerciements</h2>
 
