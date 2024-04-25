@@ -1,38 +1,40 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+name: Rapport de bug
+description: Créer un rapport pour nous aider à régler des bugs
+labels: bug
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+> [!WARNING]
+> Avant de signaler un bug, assurez-vous d'avoir la configuration par défaut (ne pas modifier `config.yaml`)
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Décrivez le bug**
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+Une description claire et concise du bug.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Pour reproduire**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+Étapes pour reproduire le comportement :
+1. Envoyer la commande '...'
+2. Cliquez sur '....'
+3. Envoyer le message '...'
+4. Voir l'erreur
 
-**Additional context**
-Add any other context about the problem here.
+**Comportement attendu**
+
+Une description claire et concise de ce à quoi vous vous attendiez.
+
+**Captures d'écran**
+
+Ajoutez des captures d'écran pour mieux voir le problème
+
+**Logiciels**
+
+- Version de Discord
+- Version de Python
+- Version de `discord.py`, `cryptography`, `requests` et `pyyaml`
+
+**Contexte supplémentaire**
+
+Ajoutez tout autre contexte concernant le problème ici.

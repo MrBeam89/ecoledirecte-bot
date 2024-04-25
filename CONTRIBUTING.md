@@ -16,6 +16,8 @@ Si vous rencontrez un bug dans le projet, veuillez ouvrir un ticket sur GitHub. 
 - Comportement réel
 - Captures d'écran ou messages d'erreur pertinents
 
+Pour plus d'informations, veuillez regarder [bug_report.md](.github/ISSUE_TEMPLATE/bug_report.md).
+
 ### Suggérer des améliorations
 
 Nous accueillons les suggestions d'améliorations ou de nouvelles fonctionnalités. Avant de soumettre une demande d'amélioration, veuillez vérifier s'il existe déjà un ticket discutant de la même amélioration. Si ce n'est pas le cas, n'hésitez pas à ouvrir un nouveau ticket et à décrire votre suggestion en détail.
