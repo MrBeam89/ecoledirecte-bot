@@ -435,86 +435,125 @@ async def vie_scolaire(contexte):
     if not api_credentials:
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
-        return None
+        return
+    
+    # Embed du choix
+    titre = ":school:  **Vie scolaire**"
+    message = '''Veuillez réagir avec un de ces émojis :
+    :ghost: : Absences
+    :hourglass: : Retards
+    :thumbsup: : Encouragements
+    :boom: : Punitions'''
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+    embed_envoye = await contexte.send(embed=embed)
 
-    # Obtenir les infos pour l'API
+    # Ajouter les émojis à l'embed pour faciliter la réaction de l'utilisateur    
+    for emoji in "👻⌛👍💥":
+        await embed_envoye.add_reaction(emoji)
+
+    # Vérifie que la réaction vient bien de l'utilisateur qui a exécuté la commande et que seul un des émojis proposés est choisi
+    def checkEmoji(reaction, utilisateur):
+        return contexte.message.author == utilisateur and embed_envoye.id == reaction.message.id and (str(reaction.emoji) in "👻⌛💥👍")
+
+    # Obtenir la catégorie selon l'émoji choisi
+    try:
+        reaction, _ = await bot.wait_for("reaction_add", timeout=30, check=checkEmoji)
+    except TimeoutError:
+        await contexte.send("Vous avez mis trop de temps à répondre. Annulation...")
+        return
+
+    # Obtenir les infos pour l'API et obtenir les données de la vie scolaire
+    await contexte.send(":hourglass: Veuillez patienter...")
     token = api_credentials["token"]
     eleve_id = api_credentials["eleve_id"]
     vie_scolaire_data = ecoledirecte.vie_scolaire(eleve_id, token).json()["data"]
 
-    # Contenu du message
-    message = ":school: **Vie scolaire**\n\n"
-
     # Absences et retards
-    absences = []
-    retards = []
+    if reaction.emoji in "👻⌛":
+        absences = []
+        retards = []
     
-    # Tri absence/retard
-    for element in vie_scolaire_data["absencesRetards"]:
-        if element["typeElement"] == "Absence":
-            absences.append(element)
-        if element["typeElement"] == "Retard":
-            retards.append(element)
+        # Tri absence/retard
+        for element in vie_scolaire_data["absencesRetards"]:
+            if element["typeElement"] == "Absence":
+                absences.append(element)
+            if element["typeElement"] == "Retard":
+                retards.append(element)
 
-    # Message des absences
-    message +=  ":ghost: **Absences**\n"
-    message += f"{len(absences)} absence(s)\n"
-    for absence in absences:
-        date = absence["displayDate"]
-        if absence["justifie"] == True:
-            justifiee = "Oui"
-        else:
-            justifiee = "Non"
-        message += f"- {date}. Justifiée ? **{justifiee}**\n"
+    # Encouragements et punitions
+    elif reaction.emoji in "👍💥":
+        encouragements = []
+        punitions = []
 
-    message += "\n"
-    
-    # Message des retards
-    message += ":hourglass: **Retards**\n"
-    message += f"{len(retards)} retard(s)\n"
-    for retard in retards:
-        date = retard["displayDate"]
-        duree = retard["libelle"]
-        if retard["justifiee"]:
-            justifiee = "Oui"
-        else:
-            justifiee = "Non"
-        message += f"- {date} de {duree}. Justifiée ? **{justifiee}**\n"
-    
-    message += "\n"
+        # Tri encouragement/punition
+        for element in vie_scolaire_data["sanctionsEncouragements"]:
+            if element["typeElement"] == "Punition":
+                punitions.append(element)
+            else:
+                encouragements.append(element)
 
-    # Encouragements/punitions
+    message = ""
 
-    encouragements = []
-    punitions = []
+    # Liste des absences
+    if reaction.emoji == "👻":
+        titre = f":ghost:  **Vous avez {len(absences)} absence(s)**"
+        
+        for absence in absences:
+            date = absence["displayDate"]
+            if absence["justifie"] == True:
+                justifiee = "Oui"
+            else:
+                justifiee = "Non"
+            message += f"- {date}. Justifiée ? **{justifiee}**\n"
 
-    for element in vie_scolaire_data["sanctionsEncouragements"]:
-        if element["typeElement"] == "Punition":
-            punitions.append(element)
-        else:
-            encouragements.append(element)
+        if not message:
+            message += ":tada: **Félicitations!**"
 
-    # Encouragements
-    message += ":thumbsup: **Encouragements**\n"
-    message += f"{len(encouragements)} encouragement(s)\n"
-    for encouragement in encouragements:
-        date = encouragement["date"]
-        motif = encouragement["motif"]
-        message += f"- Le {date} pour {motif}"
+    # Liste des retards
+    elif reaction.emoji == "⌛":
+        titre = f":hourglass:  **Vous avez {len(retards)} retard(s)**"
 
-    message += "\n"
+        for retard in retards:
+            date = retard["displayDate"]
+            duree = retard["libelle"]
+            if retard["justifiee"]:
+                justifiee = "Oui"
+            else:
+                justifiee = "Non"
+            message += f"- {date} de {duree}. Justifiée ? **{justifiee}**\n"
 
-    # Punitions
-    message += ":boom: **Punitions**\n"
-    message += f"{len(punitions)} punition(s)\n"
-    for punition in punitions:
-        date = punition["date"]
-        libelle = punition["libelle"]
-        motif = punition["motif"]
-        duree = punition["aFaire"]
-        message += f"- {libelle} le {date} pendant {duree} pour {motif}\n"
+        if not message:
+            message += ":tada: **Félicitations!**"
 
-    await contexte.send(message)
+    # Liste des encouragements
+    elif reaction.emoji == "👍":
+        titre = f":thumbsup:  **Vous avez {len(encouragements)} encouragement(s)**"
+
+        for encouragement in encouragements:
+            date = encouragement["date"]
+            motif = encouragement["motif"]
+            message += f"- Le {date} pour {motif}"
+
+        if not message:
+            message += "Pas grave!"
+
+    # Liste des punitions
+    elif reaction.emoji == "💥":
+        titre = f":boom:  **Vous avez {len(punitions)} punition(s)**"
+
+        for punition in punitions:
+            date = punition["date"]
+            libelle = punition["libelle"]
+            motif = punition["motif"]
+            duree = punition["aFaire"]
+            message += f"- {libelle} Le {date} pendant {duree} pour {motif}\n"
+
+        if not message:
+                message += ":tada: **Félicitations!**"
+
+    # Embed de la réponse
+    embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
+    await contexte.send(embed=embed)
 
 
 # Notes (WIP)
