@@ -129,18 +129,17 @@ def credentials_check(username, password, cn, cv):
 @commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 async def aide(contexte):
     titre = "**EcoleDirecte Bot** par Raticlette (@mrbeam89_)"
-    message = f'''
-Commandes disponibles :
-**{BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
-**{BOT_COMMAND_PREFIX}logout** : Se déconnecter
-**{BOT_COMMAND_PREFIX}cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
-**{BOT_COMMAND_PREFIX}edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
-**{BOT_COMMAND_PREFIX}vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
-**{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes
-**{BOT_COMMAND_PREFIX}aide** : Ce message
-**{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
-**{BOT_COMMAND_PREFIX}license** : Informations de licence
-**{BOT_COMMAND_PREFIX}code_source** : Code source du bot (compressé dans un fichier ZIP)'''
+    message = f'''Commandes disponibles :
+    **{BOT_COMMAND_PREFIX}login <identifiant> <motdepasse>** : Se connecter (à utiliser qu'une seule fois!)
+    **{BOT_COMMAND_PREFIX}logout** : Se déconnecter
+    **{BOT_COMMAND_PREFIX}cdt <date>** : Cahier de texte de la date choisie (sous la forme AAAA-MM-JJ)
+    **{BOT_COMMAND_PREFIX}edt <date>** : Emploi du temps de la date choisie (sous la forme AAAA-MM-JJ)
+    **{BOT_COMMAND_PREFIX}vie_scolaire** : Vie scolaire (absences, retards, encouragements et punitions)
+    **{BOT_COMMAND_PREFIX}notes** : *(WIP)* Récupérer vos notes
+    **{BOT_COMMAND_PREFIX}aide** : Ce message
+    **{BOT_COMMAND_PREFIX}remerciements** : Merci à eux!
+    **{BOT_COMMAND_PREFIX}license** : Informations de licence
+    **{BOT_COMMAND_PREFIX}code_source** : Code source du bot (compressé dans un fichier ZIP)'''
     footer = "Envoyez-moi un MP en cas de souci!"
     github_repo_url = "https://github.com/MrBeam89/ecoledirecte-bot"
 
@@ -657,10 +656,10 @@ async def notes(contexte):
 async def remerciements(contexte):
     titre = ":clap:  **Remerciements**"
     message = '''Merci à...
-**L'équipe derrière la [documentation (non-officielle mais excellente) de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !
-**Aleocraft (@aleocraft)** : Premier Bêta-testeur !
-**CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)
-**:index_pointing_at_the_viewer: Vous** : Si vous utilisez ce bot ou si vous contribuez!'''
+    **L'équipe derrière la [documentation (non-officielle mais excellente) de l'API](https://github.com/EduWireApps/ecoledirecte-api-docs)** : Ce bot n'aurait jamais vu le jour sans eux !
+    **Aleocraft (@aleocraft)** : Premier Bêta-testeur !
+    **CreepinGenius (@redstonecreeper6)** : Aide et conseils (même s'il a pas voulu tester)
+    **:index_pointing_at_the_viewer: Vous** : Si vous utilisez ce bot ou si vous contribuez!'''
     
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
 
@@ -673,11 +672,11 @@ async def remerciements(contexte):
 async def license(contexte):
     titre = "📜  **Informations de Licence du Bot**"
     message = '''Ce bot est distribué sous la Licence Publique Affero Générale GNU version 3.0 (AGPLv3). Vous êtes libre d'utiliser, de modifier et de distribuer ce bot conformément aux termes de cette licence.
-
-**Texte Complet de la Licence :** [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.html#license-text)
-
-Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
     
+    **Texte Complet de la Licence :** [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.html#license-text)
+    
+    Pour plus de détails, veuillez consulter la licence. Si vous avez des questions, veuillez visitez la [FAQ](https://www.gnu.org/licenses/agpl-faq.html).'''
+
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
     embed.set_thumbnail(url="https://www.gnu.org/graphics/agplv3-with-text-162x68.png")
     await contexte.send(embed=embed)
@@ -689,6 +688,7 @@ Pour plus de détails, veuillez consulter la licence. Si vous avez des questions
 async def code_source(contexte):
     zip_filepath = zip_source.create_zip_source(ZIP_SOURCE_CODE_FILENAME)
     await contexte.send(file=discord.File(zip_filepath))
+
 
 # Démarrer le bot
 BOT_TOKEN_FILENAME = __file__.rstrip(os.path.basename(__file__)) + BOT_TOKEN_FILENAME
