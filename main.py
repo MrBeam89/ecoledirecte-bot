@@ -162,7 +162,8 @@ async def login(contexte, username, password):
         return
 
     # Si l'utilisateur n'est pas encore connecté
-    await contexte.send(":hourglass: Veuillez patienter...")
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")
+
     logging.info(f"Tentative d'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
     reponse = ecoledirecte.login(username, password, '', '')
     reponse_json = reponse.json()
@@ -186,6 +187,9 @@ async def login(contexte, username, password):
         quiz_connexion_get_response = ecoledirecte.quiz_connexion_get(token).json()
         question = b64.decode_base64(quiz_connexion_get_response['data']['question'])
         propositions = quiz_connexion_get_response['data']['propositions']
+
+        # Effacer le message d'attente
+        await message_attente.delete()
 
         # Embed du quiz
         titre = "Veuillez répondre à la question suivante par le numéro à gauche de la réponse"
@@ -246,7 +250,7 @@ async def login(contexte, username, password):
         cv = cn_et_cv['cv']
         
         # Renvoyer une requêtre de connexion avec la double-authentification réussie
-        await contexte.send(":hourglass: Veuillez patienter...")
+        message_attente = await contexte.send(":hourglass: Veuillez patienter...")
         reponse = ecoledirecte.login(username, password, cn, cv)
         reponse_json = reponse.json()
 
@@ -268,6 +272,10 @@ async def login(contexte, username, password):
         message = "Connecté(e) en tant que :\n"
         message += f"**Nom** : {nom}\n**Prénom** : {prenom}\n**Classe** : {classe}"
 
+        # Effacer le message d'attente
+        await message_attente.delete()
+
+        # Embed de connexion réussie
         embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
         await contexte.send(embed=embed)
             
@@ -315,9 +323,13 @@ async def cdt(contexte, date):
     cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
-    await contexte.send(":hourglass: Veuillez patienter...")   
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")   
     api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
+        # Effacer le message d'attente
+        await message_attente.delete()
+
+        # Message d'identifiants changés
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
         return None
@@ -343,6 +355,9 @@ async def cdt(contexte, date):
     # Si il n'y a pas de devoirs
     if not message:
         message = ":tada: **Pas de devoirs pour ce jour-là !**"
+
+    # Effacer le message d'attente
+    await message_attente.delete()
 
     # Envoyer l'embed
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
@@ -372,9 +387,13 @@ async def edt(contexte, date):
     cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
-    await contexte.send(":hourglass: Veuillez patienter...")   
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")   
     api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
+        # Effacer le message d'attente
+        await message_attente.delete()
+
+        # Message d'identifiants changés
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
         return None
@@ -386,6 +405,9 @@ async def edt(contexte, date):
     edt_data = ecoledirecte.emploi_du_temps(eleve_id, token, date, date, "false").json()["data"]
     edt_data = sorted(edt_data, key=lambda x: x['start_date']) # Arranger les cours dans le bon ordre
     
+    # Effacer le message d'attente
+    await message_attente.delete()
+
     # Contenu de l'embed
     titre = f":calendar_spiral:  Emploi du temps du {date}"
     message = ""
@@ -430,13 +452,20 @@ async def vie_scolaire(contexte):
     cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
-    await contexte.send(":hourglass: Veuillez patienter...")   
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")   
     api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
+        # Effacer le message d'attente
+        await message_attente.delete()
+
+        # Message d'identifiants changés
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
         return
     
+    # Effacer le message d'attente
+    await message_attente.delete()
+
     # Embed du choix
     titre = ":school:  **Vie scolaire**"
     message = '''Veuillez réagir avec un de ces émojis :
@@ -462,8 +491,10 @@ async def vie_scolaire(contexte):
         await contexte.send("Vous avez mis trop de temps à répondre. Annulation...")
         return
 
+    # Message d'attente
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")
+
     # Obtenir les infos pour l'API et obtenir les données de la vie scolaire
-    await contexte.send(":hourglass: Veuillez patienter...")
     token = api_credentials["token"]
     eleve_id = api_credentials["eleve_id"]
     vie_scolaire_data = ecoledirecte.vie_scolaire(eleve_id, token).json()["data"]
@@ -551,6 +582,9 @@ async def vie_scolaire(contexte):
         if not message:
                 message += ":tada: **Félicitations!**"
 
+    # Effacer le message d'attente
+    await message_attente.delete()
+
     # Embed de la réponse
     embed = discord.Embed(title=titre, description=message, color=EMBED_COLOR)
     await contexte.send(embed=embed)
@@ -571,17 +605,26 @@ async def notes(contexte):
     cv = identifiants[3]
 
     # Vérifie la validité des identifiants et obtenir token et ID d'élève
-    await contexte.send(":hourglass: Veuillez patienter...")   
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")   
     api_credentials = credentials_check(username, password, cn, cv)
     if not api_credentials:
+        # Effacer le message d'attente
+        await message_attente.delete()
+
+        # Message d'identifiants changés
         logging.info(f"Echec de l'authentification de l'utilisateur {contexte.author.name} avec l'id {contexte.author.id}")
         await contexte.send(f"Identifiant et/ou mot de passe changés! Veuillez **{BOT_COMMAND_PREFIX}logout** puis **{BOT_COMMAND_PREFIX}login**")
         return None
+
+    # Effacer le message d'attente
+    await message_attente.delete()
 
     # Obtenir les infos pour l'API
     token = api_credentials["token"]
     eleve_id = api_credentials["eleve_id"]
 
+    # Obtenir les données des notes
+    message_attente = await contexte.send(":hourglass: Veuillez patienter...")
     notes_data = ecoledirecte.notes(eleve_id, token).json()["data"]
     notes = notes_data["notes"]
 
@@ -600,6 +643,9 @@ async def notes(contexte):
                         message_list.append(text)
                     else:
                         message_list[-1] += text
+
+    # Effacer le message d'attente
+    await message_attente.delete()
 
     for message in message_list:
         await contexte.send(message)
