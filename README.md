@@ -47,7 +47,7 @@ Possède plusieurs fonctionnalités telles que :
 Vous aurez besoin des outils suivants :
 
 - Python 3 : Disponible [ici](https://www.python.org/)
-- `git` : Disponible [ici](https://git-scm.com/downloads) (optionnel)
+- `git` : Disponible [ici](https://git-scm.com/downloads)
 - Module `discord` : `pip3 install discord.py`
 - Module `cryptography` : `pip3 install cryptography`
 - Module `requests` : `pip3 install requests`
